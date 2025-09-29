@@ -1,0 +1,214 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "title": "Performance Running Tee",
+      "slug": "performance-running-tee",
+      "price": 45,
+      "compareAtPrice": 60,
+      "images": [
+        "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_2000,h_2000/global/523236/73/fnd/SEA/fmt/png/Performance-Running-Tee-Men"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Orange"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "description": "Engineered for peak performance with moisture-wicking technology and seamless construction.",
+      "tags": [
+        "running",
+        "performance",
+        "moisture-wicking"
+      ],
+      "inventory": 50,
+      "category": "tops"
+    },
+    {
+      "id": "2",
+      "title": "Elite Training Shorts",
+      "slug": "elite-training-shorts",
+      "price": 55,
+      "compareAtPrice": null,
+      "images": [
+        "https://images-na.ssl-images-amazon.com/images/I/51d7VDKhqBL.jpg"
+      ],
+      "colors": [
+        "Black",
+        "Charcoal",
+        "Orange"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "Lightweight training shorts with 4-way stretch and secure zip pockets.",
+      "tags": [
+        "training",
+        "shorts",
+        "4-way stretch"
+      ],
+      "inventory": 35,
+      "category": "bottoms"
+    },
+    {
+      "id": "3",
+      "title": "Pro Runner Sneakers",
+      "slug": "pro-runner-sneakers",
+      "price": 180,
+      "compareAtPrice": 220,
+      "images": [
+        "https://m.media-amazon.com/images/I/51OJEtfQ8gL._UY900_.jpg"
+      ],
+      "colors": [
+        "Black/Orange",
+        "White/Black",
+        "Charcoal/Orange"
+      ],
+      "sizes": [
+        "7",
+        "7.5",
+        "8",
+        "8.5",
+        "9",
+        "9.5",
+        "10",
+        "10.5",
+        "11",
+        "11.5",
+        "12"
+      ],
+      "description": "Revolutionary cushioning technology meets lightweight design for your best run yet.",
+      "tags": [
+        "running",
+        "shoes",
+        "cushioning"
+      ],
+      "inventory": 25,
+      "category": "footwear"
+    },
+    {
+      "id": "4",
+      "title": "Athletic Hoodie",
+      "slug": "athletic-hoodie",
+      "price": 85,
+      "compareAtPrice": null,
+      "images": [
+        "https://media.boohoo.com/i/boohoo/bmm66358_khaki_xl/male-khaki-man-active-oversized-athletic-hoodie/?w=900&qlt=default&fmt.jp2.qlt=70&fmt=auto&sm=fit"
+      ],
+      "colors": [
+        "Charcoal",
+        "Black",
+        "White"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "description": "Premium cotton blend hoodie with athletic fit and modern design details.",
+      "tags": [
+        "hoodie",
+        "casual",
+        "cotton blend"
+      ],
+      "inventory": 40,
+      "category": "tops"
+    },
+    {
+      "id": "5",
+      "title": "Compression Leggings",
+      "slug": "compression-leggings",
+      "price": 70,
+      "compareAtPrice": 90,
+      "images": [
+        "https://contents.mediadecathlon.com/m12266841/k$8bc07adc1f4f775511c96aa675df14db/picture.jpg"
+      ],
+      "colors": [
+        "Black",
+        "Charcoal",
+        "Orange"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "High-performance compression leggings with sculpting fit and moisture management.",
+      "tags": [
+        "leggings",
+        "compression",
+        "performance"
+      ],
+      "inventory": 30,
+      "category": "bottoms"
+    },
+    {
+      "id": "6",
+      "title": "Training Cap",
+      "slug": "training-cap",
+      "price": 35,
+      "compareAtPrice": null,
+      "images": [
+        "https://builtforathletes.com/cdn/shop/files/built-for-athletes-women-training-cap-70649099092351.webp?v=1735904482&width=2543"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Orange"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Lightweight training cap with moisture-wicking sweatband and adjustable fit.",
+      "tags": [
+        "cap",
+        "training",
+        "moisture-wicking"
+      ],
+      "inventory": 60,
+      "category": "accessories"
+    }
+  ],
+  "categories": [
+    {
+      "id": "tops",
+      "name": "Tops",
+      "slug": "tops",
+      "image": "/placeholder.svg?height=400&width=400"
+    },
+    {
+      "id": "bottoms",
+      "name": "Bottoms",
+      "slug": "bottoms",
+      "image": "/placeholder.svg?height=400&width=400"
+    },
+    {
+      "id": "footwear",
+      "name": "Footwear",
+      "slug": "footwear",
+      "image": "/placeholder.svg?height=400&width=400"
+    },
+    {
+      "id": "accessories",
+      "name": "Accessories",
+      "slug": "accessories",
+      "image": "/placeholder.svg?height=400&width=400"
+    }
+  ]
+}
