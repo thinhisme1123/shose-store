@@ -4,6 +4,7 @@ import { Poppins, Inter } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
 import { MiniCart } from "@/components/mini-cart"
+import { Toaster } from "sonner"
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background font-body text-foreground">
         <CartProvider>
           {children}
+          <Toaster richColors position="top-right" />
           <MiniCart />
         </CartProvider>
       </body>

@@ -14,6 +14,7 @@ import productsData from "@/lib/products.json"
 import { formatPrice, calculateDiscount } from "@/lib/utils"
 import { notFound } from "next/navigation"
 import { useCart } from "@/contexts/cart-context"
+import { toast } from "sonner"
 
 interface ProductPageProps {
   params: {
@@ -41,7 +42,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      alert("Please select a size")
+      toast.error("Please select a size before adding to cart")
       return
     }
 
@@ -53,6 +54,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       color: selectedColor,
       size: selectedSize,
       quantity,
+      id: ""
     })
 
     openCart()

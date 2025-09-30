@@ -190,25 +190,25 @@
       "id": "tops",
       "name": "Tops",
       "slug": "tops",
-      "image": "/placeholder.svg?height=400&width=400"
+      "image": "https://images-na.ssl-images-amazon.com/images/I/61-0KZl+sHL.jpg"
     },
     {
       "id": "bottoms",
       "name": "Bottoms",
       "slug": "bottoms",
-      "image": "/placeholder.svg?height=400&width=400"
+      "image": "https://images.napali.app/global/quiksilver-products/all/default/xlarge/eqyfb03361_quiksilver,w_kta0_frt1.jpg"
     },
     {
       "id": "footwear",
       "name": "Footwear",
       "slug": "footwear",
-      "image": "/placeholder.svg?height=400&width=400"
+      "image": "https://static.nike.com/a/images/f_auto/dpr_3.0,cs_srgb/h_411,c_limit/341f94f2-53c9-4195-ad45-62ea41cdad53/nike-just-do-it.png"
     },
     {
       "id": "accessories",
       "name": "Accessories",
       "slug": "accessories",
-      "image": "/placeholder.svg?height=400&width=400"
+      "image": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c74ac236-14c7-49ed-9ec5-d633e50ddb9e/U+NK+DFADV+RISE+CAP+S+AB+SF+P.png"
     }
   ]
 }

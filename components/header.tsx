@@ -1,13 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Search, ShoppingBag, User, Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { useCart } from "@/contexts/cart-context"
-import { MegaMenu } from "./mega-menu"
+import { useState } from "react";
+import Link from "next/link";
+import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useCart } from "@/contexts/cart-context";
+import { MegaMenu } from "./mega-menu";
 
 const navigation = [
   { name: "Men", href: "/collections/men" },
@@ -16,37 +22,37 @@ const navigation = [
   { name: "Accessories", href: "/collections/accessories" },
   { name: "Contact", href: "/contact" },
   { name: "Sale", href: "/collections/sale" },
-]
+];
 
 export function Header() {
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [activeMenu, setActiveMenu] = useState<string | null>(null)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { totalItems, toggleCart } = useCart()
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { totalItems, toggleCart } = useCart();
 
-  let hoverTimeout: NodeJS.Timeout
+  let hoverTimeout: NodeJS.Timeout;
 
   const handleMenuEnter = (menuName: string) => {
-    clearTimeout(hoverTimeout)
-    setActiveMenu(menuName)
-    setIsMenuOpen(true)
-  }
+    clearTimeout(hoverTimeout);
+    setActiveMenu(menuName);
+    setIsMenuOpen(true);
+  };
 
   const handleMenuLeave = () => {
     hoverTimeout = setTimeout(() => {
-      setActiveMenu(null)
-      setIsMenuOpen(false)
-    }, 100) // Small delay to allow moving to dropdown
-  }
+      setActiveMenu(null);
+      setIsMenuOpen(false);
+    }, 100); // Small delay to allow moving to dropdown
+  };
 
   const handleMegaMenuEnter = () => {
-    clearTimeout(hoverTimeout)
-  }
+    clearTimeout(hoverTimeout);
+  };
 
   const handleMegaMenuLeave = () => {
-    setActiveMenu(null)
-    setIsMenuOpen(false)
-  }
+    setActiveMenu(null);
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -55,7 +61,7 @@ export function Header() {
           {/* Mobile menu */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
+              <Button className="cursor-pointer" variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -64,14 +70,15 @@ export function Header() {
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
-              <nav className="mt-6 space-y-4">
+              <nav className="mx-6 space-y-4">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="block text-lg font-medium text-foreground hover:text-primary transition-colors"
+                    className="relative block text-lg font-medium text-foreground hover:text-primary transition-colors group overflow-hidden"
                   >
                     {item.name}
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 ease-out group-hover:w-full"></span>
                   </Link>
                 ))}
               </nav>
@@ -81,9 +88,13 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 bg-primary rounded-sm flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">A</span>
+              <span className="text-primary-foreground font-bold text-lg">
+                A
+              </span>
             </div>
-            <span className="font-sans font-bold text-xl tracking-tight">ATHLEON</span>
+            <span className="font-sans font-bold text-xl tracking-tight">
+              ATHLEON
+            </span>
           </Link>
 
           {/* Desktop navigation */}
@@ -91,15 +102,20 @@ export function Header() {
             {navigation.map((item) => (
               <div
                 key={item.name}
-                className="relative"
-                onMouseEnter={() => item.name !== "Sale" && item.name !== "Contact" && handleMenuEnter(item.name)}
+                className="relative group"
+                onMouseEnter={() =>
+                  item.name !== "Sale" &&
+                  item.name !== "Contact" &&
+                  handleMenuEnter(item.name)
+                }
                 onMouseLeave={handleMenuLeave}
               >
                 <Link
                   href={item.href}
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 relative overflow-hidden"
                 >
                   {item.name}
+                  <span className="absolutet bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 ease-out group-hover:w-full"></span>
                 </Link>
               </div>
             ))}
@@ -111,13 +127,27 @@ export function Header() {
             <div className="relative">
               {isSearchOpen ? (
                 <div className="flex items-center space-x-2">
-                  <Input type="search" placeholder="Search products..." className="w-64 h-9" autoFocus />
-                  <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)}>
+                  <Input
+                    type="search"
+                    placeholder="Search products..."
+                    className="w-64 h-9"
+                    autoFocus
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsSearchOpen(false)}
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
-                <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="hidden sm:flex">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchOpen(true)}
+                  className="hidden sm:flex"
+                >
                   <Search className="h-5 w-5" />
                   <span className="sr-only">Search</span>
                 </Button>
@@ -133,7 +163,12 @@ export function Header() {
             </Button>
 
             {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative" onClick={toggleCart}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              onClick={toggleCart}
+            >
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
@@ -153,5 +188,5 @@ export function Header() {
         onMouseLeave={handleMegaMenuLeave}
       />
     </header>
-  )
+  );
 }

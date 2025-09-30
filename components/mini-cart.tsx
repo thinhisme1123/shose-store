@@ -84,7 +84,7 @@ export function MiniCart() {
               </div>
 
               {/* Cart Footer */}
-              <div className="border-t pt-6 space-y-4">
+              <div className="border-t pt-6 space-y-4 mx-3">
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total</span>
                   <span>{formatPrice(totalPrice)}</span>
