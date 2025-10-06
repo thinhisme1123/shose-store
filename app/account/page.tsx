@@ -1,12 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { User, Package, Heart, Settings, LogOut } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { User, Package, Heart, Settings, LogOut, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Mock data
 const mockUser = {
@@ -15,7 +22,7 @@ const mockUser = {
   joinDate: "March 2024",
   totalOrders: 12,
   totalSpent: 2450,
-}
+};
 
 const mockOrders = [
   {
@@ -42,7 +49,7 @@ const mockOrders = [
     total: 299.99,
     items: [{ name: "Premium Workout Set", quantity: 1, price: 299.99 }],
   },
-]
+];
 
 const mockWishlist = [
   {
@@ -57,33 +64,54 @@ const mockWishlist = [
     price: 89.99,
     image: "/compression-leggings.png",
   },
-]
+];
 
 export default function AccountPage() {
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState("overview");
+  const router = useRouter()
+
+  const handleGoBack = () => {
+    router.back()
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "shipped":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "processing":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={handleGoBack}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+        </div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">My Account</h1>
-          <p className="text-muted-foreground">Manage your account and view your orders</p>
+          <p className="text-muted-foreground">
+            Manage your account and view your orders
+          </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <User size={16} />
@@ -134,7 +162,8 @@ export default function AccountPage() {
                     <strong>Total Spent:</strong> ${mockUser.totalSpent}
                   </p>
                   <p>
-                    <strong>Average Order:</strong> ${(mockUser.totalSpent / mockUser.totalOrders).toFixed(2)}
+                    <strong>Average Order:</strong> $
+                    {(mockUser.totalSpent / mockUser.totalOrders).toFixed(2)}
                   </p>
                 </CardContent>
               </Card>
@@ -144,15 +173,24 @@ export default function AccountPage() {
                   <CardTitle className="text-lg">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     <Package className="mr-2 h-4 w-4" />
                     Track Order
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     <Heart className="mr-2 h-4 w-4" />
                     View Wishlist
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     <Settings className="mr-2 h-4 w-4" />
                     Account Settings
                   </Button>
@@ -168,20 +206,32 @@ export default function AccountPage() {
               <CardContent>
                 <div className="space-y-4">
                   {mockOrders.slice(0, 3).map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={order.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div>
                         <p className="font-medium">Order {order.id}</p>
-                        <p className="text-sm text-muted-foreground">{order.date}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {order.date}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                        <p className="text-sm font-medium mt-1">${order.total}</p>
+                        <Badge className={getStatusColor(order.status)}>
+                          {order.status}
+                        </Badge>
+                        <p className="text-sm font-medium mt-1">
+                          ${order.total}
+                        </p>
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4">
-                  <Button variant="outline" onClick={() => setActiveTab("orders")}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab("orders")}
+                  >
                     View All Orders
                   </Button>
                 </div>
@@ -193,7 +243,9 @@ export default function AccountPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Order History</CardTitle>
-                <CardDescription>View and track all your orders</CardDescription>
+                <CardDescription>
+                  View and track all your orders
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -202,17 +254,26 @@ export default function AccountPage() {
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h3 className="font-semibold">Order {order.id}</h3>
-                          <p className="text-sm text-muted-foreground">Placed on {order.date}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Placed on {order.date}
+                          </p>
                         </div>
                         <div className="text-right">
-                          <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                          <p className="text-lg font-semibold mt-1">${order.total}</p>
+                          <Badge className={getStatusColor(order.status)}>
+                            {order.status}
+                          </Badge>
+                          <p className="text-lg font-semibold mt-1">
+                            ${order.total}
+                          </p>
                         </div>
                       </div>
 
                       <div className="space-y-2">
                         {order.items.map((item, index) => (
-                          <div key={index} className="flex justify-between text-sm">
+                          <div
+                            key={index}
+                            className="flex justify-between text-sm"
+                          >
                             <span>
                               {item.name} (x{item.quantity})
                             </span>
@@ -258,7 +319,9 @@ export default function AccountPage() {
                           className="w-full h-32 object-cover rounded-md mb-3"
                         />
                         <h3 className="font-medium mb-2">{item.name}</h3>
-                        <p className="text-lg font-semibold mb-3">${item.price}</p>
+                        <p className="text-lg font-semibold mb-3">
+                          ${item.price}
+                        </p>
                         <div className="flex gap-2">
                           <Button size="sm" className="flex-1">
                             Add to Cart
@@ -273,8 +336,12 @@ export default function AccountPage() {
                 ) : (
                   <div className="text-center py-8">
                     <Heart className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">Your wishlist is empty</h3>
-                    <p className="text-muted-foreground mb-4">Save items you love to buy them later</p>
+                    <h3 className="text-lg font-medium mb-2">
+                      Your wishlist is empty
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Save items you love to buy them later
+                    </p>
                     <Button asChild>
                       <Link href="/collections/all">Start Shopping</Link>
                     </Button>
@@ -292,13 +359,22 @@ export default function AccountPage() {
                   <CardDescription>Update your account details</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     Edit Profile
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     Change Password
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     Manage Addresses
                   </Button>
                 </CardContent>
@@ -310,13 +386,22 @@ export default function AccountPage() {
                   <CardDescription>Customize your experience</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     Notification Settings
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     Privacy Settings
                   </Button>
-                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-transparent"
+                  >
                     Language & Region
                   </Button>
                 </CardContent>
@@ -329,11 +414,17 @@ export default function AccountPage() {
                 <CardDescription>Irreversible account actions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent">
+                <Button
+                  variant="outline"
+                  className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </Button>
-                <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent">
+                <Button
+                  variant="outline"
+                  className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
+                >
                   Delete Account
                 </Button>
               </CardContent>
@@ -342,5 +433,5 @@ export default function AccountPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

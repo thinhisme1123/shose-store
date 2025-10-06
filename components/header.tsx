@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/cart-context";
 import { MegaMenu } from "./mega-menu";
+import { useWishlist } from "@/contexts/wishlist-context";
 
 const navigation = [
   { name: "Men", href: "/collections/men" },
@@ -29,6 +30,7 @@ export function Header() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalItems, toggleCart } = useCart();
+const { totalItems: wishlistItems } = useWishlist()
 
   let hoverTimeout: NodeJS.Timeout;
 
@@ -112,10 +114,10 @@ export function Header() {
               >
                 <Link
                   href={item.href}
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 relative overflow-hidden"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors py-2 relative"
                 >
                   {item.name}
-                  <span className="absolutet bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 ease-out group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 ease-out group-hover:w-full"></span>
                 </Link>
               </div>
             ))}
@@ -162,11 +164,24 @@ export function Header() {
               </Link>
             </Button>
 
+            {/* Wishlist */}
+            <Button variant="ghost" size="icon" className="relative" asChild>
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+                {wishlistItems > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
+                    {wishlistItems}
+                  </span>
+                )}
+                <span className="sr-only">Wishlist</span>
+              </Link>
+            </Button>
+
             {/* Cart */}
             <Button
               variant="ghost"
               size="icon"
-              className="relative"
+              className="relative cursor-pointer"
               onClick={toggleCart}
             >
               <ShoppingBag className="h-5 w-5" />

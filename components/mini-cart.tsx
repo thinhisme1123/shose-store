@@ -73,7 +73,7 @@ export function MiniCart() {
                           <div className="flex items-center space-x-2">
                             <span className="font-medium text-sm">{formatPrice(item.price * item.quantity)}</span>
                             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeItem(item.id)}>
-                              <X className="h-3 w-3" />
+                              <X className="h-3 w-3 cursor-pointer" />
                             </Button>
                           </div>
                         </div>

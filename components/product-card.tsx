@@ -1,29 +1,37 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { ShoppingBag, Heart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { formatPrice, calculateDiscount } from "@/lib/utils"
-import type { Product } from "@/lib/types"
-import { useCart } from "@/contexts/cart-context"
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ShoppingBag, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { formatPrice, calculateDiscount } from "@/lib/utils";
+import type { Product } from "@/lib/types";
+import { useCart } from "@/contexts/cart-context";
+import { useWishlist } from "@/contexts/wishlist-context";
 
 interface ProductCardProps {
-  product: Product
+  product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const discount = calculateDiscount(product.price, product.compareAtPrice)
-  const { addItem, openCart } = useCart()
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const discount = calculateDiscount(product.price, product.compareAtPrice);
+  const { addItem, openCart } = useCart();
+  const {
+    addItem: addToWishlist,
+    removeItem: removeFromWishlist,
+    isInWishlist,
+  } = useWishlist();
+
+  const inWishlist = isInWishlist(product.id)
 
   const handleQuickAdd = (e: React.MouseEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     addItem({
       productId: product.id,
@@ -33,11 +41,30 @@ export function ProductCard({ product }: ProductCardProps) {
       color: product.colors[0],
       size: product.sizes[0],
       quantity: 1,
-      id: ""
-    })
+      id: "",
+    });
 
-    openCart()
-  }
+    openCart();
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist({
+        id: product.id,
+        productId: product.id,
+        title: product.title,
+        price: product.price,
+        compareAtPrice: product.compareAtPrice,
+        image: product.images[0],
+        slug: product.slug,
+        category: product.category,
+      });
+    }
+  };
 
   return (
     <div
@@ -57,7 +84,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Discount badge */}
           {discount > 0 && (
-            <Badge className="absolute top-3 left-3 bg-destructive text-destructive-foreground">-{discount}%</Badge>
+            <Badge className="absolute top-3 left-3 bg-destructive text-destructive-foreground">
+              -{discount}%
+            </Badge>
           )}
 
           {/* Wishlist button */}
@@ -65,12 +94,9 @@ export function ProductCard({ product }: ProductCardProps) {
             variant="ghost"
             size="icon"
             className="absolute top-3 right-3 bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => {
-              e.preventDefault()
-              // TODO: Add to wishlist functionality
-            }}
+            onClick={handleWishlistToggle}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className={`h-4 w-4 ${inWishlist ? "fill-primary text-primary" : ""}`} />
           </Button>
 
           {/* Quick add button */}
@@ -89,11 +115,13 @@ export function ProductCard({ product }: ProductCardProps) {
                 <button
                   key={index}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentImageIndex ? "bg-primary" : "bg-background/60"
+                    index === currentImageIndex
+                      ? "bg-primary"
+                      : "bg-background/60"
                   }`}
                   onClick={(e) => {
-                    e.preventDefault()
-                    setCurrentImageIndex(index)
+                    e.preventDefault();
+                    setCurrentImageIndex(index);
                   }}
                 />
               ))}
@@ -107,9 +135,13 @@ export function ProductCard({ product }: ProductCardProps) {
           </h3>
 
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-foreground">{formatPrice(product.price)}</span>
+            <span className="font-semibold text-foreground">
+              {formatPrice(product.price)}
+            </span>
             {product.compareAtPrice && (
-              <span className="text-sm text-muted-foreground line-through">{formatPrice(product.compareAtPrice)}</span>
+              <span className="text-sm text-muted-foreground line-through">
+                {formatPrice(product.compareAtPrice)}
+              </span>
             )}
           </div>
 
@@ -122,22 +154,24 @@ export function ProductCard({ product }: ProductCardProps) {
                   color.toLowerCase() === "black"
                     ? "bg-black"
                     : color.toLowerCase() === "white"
-                      ? "bg-white"
-                      : color.toLowerCase() === "orange"
-                        ? "bg-orange-500"
-                        : color.toLowerCase() === "charcoal"
-                          ? "bg-gray-700"
-                          : "bg-gray-400"
+                    ? "bg-white"
+                    : color.toLowerCase() === "orange"
+                    ? "bg-orange-500"
+                    : color.toLowerCase() === "charcoal"
+                    ? "bg-gray-700"
+                    : "bg-gray-400"
                 }`}
                 title={color}
               />
             ))}
             {product.colors.length > 3 && (
-              <span className="text-xs text-muted-foreground">+{product.colors.length - 3}</span>
+              <span className="text-xs text-muted-foreground">
+                +{product.colors.length - 3}
+              </span>
             )}
           </div>
         </div>
       </Link>
     </div>
-  )
+  );
 }

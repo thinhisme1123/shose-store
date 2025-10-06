@@ -37,3 +37,14 @@ export interface User {
   firstName: string
   lastName: string
 }
+
+export interface WishlistItem {
+  id: string
+  productId: string
+  title: string
+  price: number
+  compareAtPrice?: number | null
+  image: string
+  slug: string
+  category: string
+}

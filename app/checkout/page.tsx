@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/cart-context";
 import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface FormData {
   // Contact Information
@@ -140,15 +141,13 @@ export default function CheckoutPage() {
       clearCart();
 
       // Show success message
-      alert(
-        `Order ${orderData.orderDetails.orderId} completed successfully! Confirmation email sent.`
-      );
+      toast.success(`Order ${orderData.orderDetails.orderId} completed successfully!`)
 
       // Redirect to success page or reset form
       // router.push('/order-success')
     } catch (error) {
       console.error("Order submission error:", error);
-      alert("There was an error processing your order. Please try again.");
+      toast.error(`${error}`)
     } finally {
       setIsSubmitting(false);
     }
