@@ -20,6 +20,9 @@ import { useCart } from "@/contexts/cart-context";
 import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { toast } from "sonner";
+import { StringToBoolean } from "class-variance-authority/types";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { CreditCard, Package } from "lucide-react";
 
 interface FormData {
   // Contact Information
@@ -43,17 +46,15 @@ interface FormData {
   billingState?: string;
   billingZip?: string;
 
-  // Payment
-  cardNumber: string;
-  expiry: string;
-  cvv: string;
-  cardName: string;
+  // payment method
+  paymentMethod: string;
 }
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("bank-transfer");
 
   const shippingCost = totalPrice >= 75 ? 0 : 9.99;
   const tax = totalPrice * 0.08;
@@ -61,14 +62,16 @@ export default function CheckoutPage() {
 
   const sendOrderEmail = async (orderData: any) => {
     try {
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-order-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/send-order-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to send email");
@@ -103,11 +106,8 @@ export default function CheckoutPage() {
         state: formData.get("state") as string,
         zip: formData.get("zip") as string,
 
-        // Payment
-        cardNumber: formData.get("cardNumber") as string,
-        expiry: formData.get("expiry") as string,
-        cvv: formData.get("cvv") as string,
-        cardName: formData.get("cardName") as string,
+        // Payment method
+        paymentMethod: formData.get("paymentMethod") as string,
 
         // Order Details
         orderDetails: {
@@ -141,13 +141,15 @@ export default function CheckoutPage() {
       clearCart();
 
       // Show success message
-      toast.success(`Order ${orderData.orderDetails.orderId} completed successfully!`)
+      toast.success(
+        `Order ${orderData.orderDetails.orderId} completed successfully!`
+      );
 
       // Redirect to success page or reset form
       // router.push('/order-success')
     } catch (error) {
       console.error("Order submission error:", error);
-      toast.error(`${error}`)
+      toast.error(`${error}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -301,37 +303,57 @@ export default function CheckoutPage() {
 
               {/* Payment */}
               <div>
-                <h2 className="font-semibold text-lg mb-4">Payment</h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="cardNumber">Card Number</Label>
-                    <Input
-                      id="cardNumber"
-                      name="cardNumber"
-                      placeholder="1234 5678 9012 3456"
-                      required
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="expiry">Expiry Date</Label>
-                      <Input
-                        id="expiry"
-                        name="expiry"
-                        placeholder="MM/YY"
-                        required
-                      />
+                <h2 className="font-semibold text-lg mb-4">Payment Method</h2>
+                <RadioGroup
+                  name="paymentMethod"
+                  value={paymentMethod}
+                  onValueChange={setPaymentMethod}
+                  className="space-y-3"
+                >
+                  {/* Cash on Delivery Option */}
+                  <Label
+                    htmlFor="cod"
+                    className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer transition-colors ${
+                      paymentMethod === "cod"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <RadioGroupItem value="cod" id="cod" className="mt-1" />{" "}
+                    {/* Adjust class if you want to hide: add 'sr-only' */}
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className="h-10 w-10 bg-orange-100 rounded flex items-center justify-center flex-shrink-0">
+                        <Package className="h-5 w-5 text-primary" />
+                      </div>
+                      <span className="font-normal">
+                        Cash on Delivery (COD)
+                      </span>
                     </div>
-                    <div>
-                      <Label htmlFor="cvv">CVV</Label>
-                      <Input id="cvv" name="cvv" placeholder="123" required />
+                  </Label>
+
+                  {/* Bank Transfer Option */}
+                  <Label
+                    htmlFor="bank-transfer"
+                    className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer transition-colors ${
+                      paymentMethod === "bank-transfer"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <RadioGroupItem
+                      value="bank-transfer"
+                      id="bank-transfer"
+                      className="mt-1"
+                    />{" "}
+                    {/* Adjust class if you want to hide: add 'sr-only' */}
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className="h-10 w-10 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
+                        <CreditCard className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <span className="font-normal">Bank Transfer</span>
                     </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="cardName">Name on Card</Label>
-                    <Input id="cardName" name="cardName" required />
-                  </div>
-                </div>
+                  </Label>
+                </RadioGroup>
               </div>
 
               <Button
