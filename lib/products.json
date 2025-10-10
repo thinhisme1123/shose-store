@@ -183,6 +183,102 @@
       ],
       "inventory": 60,
       "category": "accessories"
+    },
+    {
+      "id": "7",
+      "title": "FlexFit Training Joggers",
+      "slug": "flexfit-training-joggers",
+      "price": 75,
+      "compareAtPrice": 95,
+      "images": [
+        "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_2000/global/522000/01/fnd/SEA/fmt/png/FlexFit-Training-Joggers-Men"
+      ],
+      "colors": ["Black", "Charcoal", "Navy"],
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "description": "Tapered fit joggers built for performance with stretch fabric and breathable panels.",
+      "tags": ["training", "joggers", "stretch"],
+      "inventory": 45,
+      "category": "bottoms"
+    },
+    {
+      "id": "8",
+      "title": "Ultralight Running Jacket",
+      "slug": "ultralight-running-jacket",
+      "price": 120,
+      "compareAtPrice": 150,
+      "images": [
+        "https://www.newforestclothing.co.uk/cdn/shop/files/venture-ultralight-performance-running-jacket-jet-black-s-jackets-133.webp?v=1724773311"
+      ],
+      "colors": ["Black", "White", "Neon Yellow"],
+      "sizes": ["S", "M", "L", "XL"],
+      "description": "Weather-resistant running jacket made with ultralight recycled nylon.",
+      "tags": ["running", "jacket", "lightweight"],
+      "inventory": 28,
+      "category": "tops"
+    },
+    {
+      "id": "9",
+      "title": "Cushion Crew Socks (3-Pack)",
+      "slug": "cushion-crew-socks-3pack",
+      "price": 25,
+      "compareAtPrice": null,
+      "images": [
+        "https://i5.walmartimages.com/seo/Nike-Mens-3PK-Everyday-Plus-Cushion-Crew-3-Pack-Socks-White-XL-SX6888-100_39008b14-e2f1-4058-a308-215b39a720cb.9d8014ae80eecd22638c713edda1b953.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF"
+      ],
+      "colors": ["White", "Black", "Gray"],
+      "sizes": ["M", "L", "XL"],
+      "description": "Soft cotton-blend socks with arch support and moisture control.",
+      "tags": ["socks", "comfort", "training"],
+      "inventory": 100,
+      "category": "accessories"
+    },
+    {
+      "id": "10",
+      "title": "PowerLift Training Shoes",
+      "slug": "powerlift-training-shoes",
+      "price": 160,
+      "compareAtPrice": 190,
+      "images": [
+        "https://www.sportsdirect.com/images/products/13137901_l.jpg"
+      ],
+      "colors": ["Black/Red", "White/Blue", "Gray/Orange"],
+      "sizes": ["7", "7.5", "8", "8.5", "9", "9.5", "10", "11", "12"],
+      "description": "Stable sole construction with reinforced heel support for heavy lifts.",
+      "tags": ["training", "shoes", "powerlifting"],
+      "inventory": 20,
+      "category": "footwear"
+    },
+    {
+      "id": "11",
+      "title": "Performance Sports Bra",
+      "slug": "performance-sports-bra",
+      "price": 60,
+      "compareAtPrice": 75,
+      "images": [
+        "https://www.ryderwear.com/cdn/shop/products/critical-high-impact-sports-bra-black-clothing-ryderwear-844893_1080x.jpg?v=1658894047"
+      ],
+      "colors": ["Black", "White", "Orange"],
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "description": "High-impact support sports bra with breathable mesh panels and stretch comfort.",
+      "tags": ["sports bra", "training", "breathable"],
+      "inventory": 50,
+      "category": "tops"
+    },
+    {
+      "id": "12",
+      "title": "Cooling Headband",
+      "slug": "cooling-headband",
+      "price": 20,
+      "compareAtPrice": null,
+      "images": [
+        "https://www.ergodyne.com/sites/default/files/product-images/6700-cooling-bandana-blue-front.jpg"
+      ],
+      "colors": ["Gray", "Black", "Orange"],
+      "sizes": ["One Size"],
+      "description": "Moisture-activated cooling headband perfect for intense training sessions.",
+      "tags": ["accessories", "headband", "cooling"],
+      "inventory": 75,
+      "category": "accessories"
     }
   ],
   "categories": [
