@@ -29,7 +29,8 @@
         "moisture-wicking"
       ],
       "inventory": 50,
-      "category": "tops"
+      "category": "tops",
+      "gender": "men"
     },
     {
       "id": "2",
@@ -59,7 +60,8 @@
         "4-way stretch"
       ],
       "inventory": 35,
-      "category": "bottoms"
+      "category": "bottoms",
+      "gender": "men"
     },
     {
       "id": "3",
@@ -95,7 +97,8 @@
         "cushioning"
       ],
       "inventory": 25,
-      "category": "footwear"
+      "category": "footwear",
+      "gender": "men"
     },
     {
       "id": "4",
@@ -126,7 +129,8 @@
         "cotton blend"
       ],
       "inventory": 40,
-      "category": "tops"
+      "category": "tops",
+      "gender": "men"
     },
     {
       "id": "5",
@@ -156,7 +160,8 @@
         "performance"
       ],
       "inventory": 30,
-      "category": "bottoms"
+      "category": "bottoms",
+      "gender": "women"
     },
     {
       "id": "6",
@@ -198,7 +203,8 @@
       "description": "Tapered fit joggers built for performance with stretch fabric and breathable panels.",
       "tags": ["training", "joggers", "stretch"],
       "inventory": 45,
-      "category": "bottoms"
+      "category": "bottoms",
+      "gender": "men"
     },
     {
       "id": "8",
@@ -214,7 +220,8 @@
       "description": "Weather-resistant running jacket made with ultralight recycled nylon.",
       "tags": ["running", "jacket", "lightweight"],
       "inventory": 28,
-      "category": "tops"
+      "category": "tops",
+      "gender": "men"
     },
     {
       "id": "9",
@@ -230,7 +237,8 @@
       "description": "Soft cotton-blend socks with arch support and moisture control.",
       "tags": ["socks", "comfort", "training"],
       "inventory": 100,
-      "category": "accessories"
+      "category": "accessories",
+      "gender": "men"
     },
     {
       "id": "10",
@@ -246,7 +254,8 @@
       "description": "Stable sole construction with reinforced heel support for heavy lifts.",
       "tags": ["training", "shoes", "powerlifting"],
       "inventory": 20,
-      "category": "footwear"
+      "category": "footwear",
+      "gender": "unisex"
     },
     {
       "id": "11",
@@ -262,7 +271,8 @@
       "description": "High-impact support sports bra with breathable mesh panels and stretch comfort.",
       "tags": ["sports bra", "training", "breathable"],
       "inventory": 50,
-      "category": "tops"
+      "category": "tops",
+      "gender": "women"
     },
     {
       "id": "12",
@@ -278,7 +288,8 @@
       "description": "Moisture-activated cooling headband perfect for intense training sessions.",
       "tags": ["accessories", "headband", "cooling"],
       "inventory": 75,
-      "category": "accessories"
+      "category": "accessories",
+      "gender": "unisex"
     }
   ],
   "categories": [
@@ -305,6 +316,11 @@
       "name": "Accessories",
       "slug": "accessories",
       "image": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c74ac236-14c7-49ed-9ec5-d633e50ddb9e/U+NK+DFADV+RISE+CAP+S+AB+SF+P.png"
+    },
+    {
+      "id": "men",
+      "name": "Men",
+      "slug": "men"
     }
   ]
 }

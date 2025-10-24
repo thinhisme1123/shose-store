@@ -25,18 +25,30 @@ export default function CollectionPage({ params }: CollectionPageProps) {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([])
   const [priceRange, setPriceRange] = useState([0, 300])
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  
+  const collectionSlug = params.collection.toLowerCase()
+  console.log(collectionSlug);
+  
 
   // Get collection info
-  const collection = productsData.categories.find((cat) => cat.slug === params.collection)
-  const collectionTitle = collection?.name || params.collection.charAt(0).toUpperCase() + params.collection.slice(1)
+  const category = productsData.categories.find((cat) => cat.slug === collectionSlug)
+  const collectionTitle = category?.name || collectionSlug.charAt(0).toUpperCase() + collectionSlug.slice(1)
 
-  // Filter products
+  // Determine if it’s gender collection
+  const isGenderCollection =
+    collectionSlug === "men" || collectionSlug === "women"
+
+  // Filter products and Filter by category if it's a specific category
   const filteredProducts = useMemo(() => {
     let products = productsData.products
 
-    // Filter by category if it's a specific category
-    if (collection) {
-      products = products.filter((product) => product.category === collection.id)
+    // Filter by gender
+    if (isGenderCollection) {
+      products = products.filter(
+        (product) => product.gender?.toLowerCase() === collectionSlug.toLowerCase() || product.gender?.toLowerCase() === "unisex"
+      )
+    } else if (category) {
+      products = products.filter((product) => product.category === category.id)
     }
 
     // Filter by colors
@@ -69,7 +81,7 @@ export default function CollectionPage({ params }: CollectionPageProps) {
     }
 
     return products
-  }, [collection, selectedColors, selectedSizes, priceRange, sortBy])
+  }, [category, selectedColors, selectedSizes, priceRange, sortBy])
 
   // Get all available colors and sizes
   const allColors = Array.from(new Set(productsData.products.flatMap((p) => p.colors)))

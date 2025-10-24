@@ -84,7 +84,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Discount badge */}
           {discount > 0 && (
-            <Badge className="absolute top-3 left-3 bg-destructive text-destructive-foreground">
+            <Badge className="absolute top-3 left-3 bg-red-600 text-white font-semibold">
               -{discount}%
             </Badge>
           )}

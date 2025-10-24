@@ -1,21 +1,6 @@
 // API utility functions for client-side requests
 
-export interface Product {
-  id: number
-  name: string
-  slug: string
-  price: number
-  originalPrice?: number
-  description: string
-  category: string
-  images: string[]
-  colors: string[]
-  sizes: string[]
-  inStock: boolean
-  featured: boolean
-  rating: number
-  reviews: number
-}
+import { Product } from "@/domain/enities/product"
 
 export interface CartItem {
   id: string
