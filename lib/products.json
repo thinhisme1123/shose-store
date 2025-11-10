@@ -320,7 +320,14 @@
     {
       "id": "men",
       "name": "Men",
-      "slug": "men"
+      "slug": "men",
+      "image": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c74ac236-14c7-49ed-9ec5-d633e50ddb9e/U+NK+DFADV+RISE+CAP+S+AB+SF+P.png"
+    },
+    {
+      "id": "women",
+      "name": "Women",
+      "slug": "women",
+      "image": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c74ac236-14c7-49ed-9ec5-d633e50ddb9e/U+NK+DFADV+RISE+CAP+S+AB+SF+P.png"
     }
   ]
 }

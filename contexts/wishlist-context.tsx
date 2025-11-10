@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useReducer, useEffect } from "react"
+import { createContext, useContext, useReducer, useEffect, useState } from "react"
 import type { WishlistItem } from "@/lib/types"
 
 interface WishlistState {
@@ -67,6 +67,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     items: [],
   })
 
+  const [hasLoaded, setHasLoaded] = useState(false)
+
   // Load wishlist from localStorage on mount
   useEffect(() => {
     const savedWishlist = localStorage.getItem("athleon-wishlist")
@@ -78,12 +80,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         console.error("Failed to load wishlist from localStorage:", error)
       }
     }
+    setHasLoaded(true)
   }, [])
 
   // Save wishlist to localStorage whenever it changes
   useEffect(() => {
+    if (!hasLoaded) return
     localStorage.setItem("athleon-wishlist", JSON.stringify(state.items))
-  }, [state.items])
+  }, [state.items,hasLoaded])
 
   const addItem = (item: WishlistItem) => {
     dispatch({ type: "ADD_ITEM", payload: item })

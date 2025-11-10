@@ -23,32 +23,7 @@ import { toast } from "sonner";
 import { StringToBoolean } from "class-variance-authority/types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CreditCard, Package } from "lucide-react";
-
-interface FormData {
-  // Contact Information
-  email: string;
-  newsletter: boolean;
-
-  // Shipping Address
-  firstName: string;
-  lastName: string;
-  address: string;
-  apartment: string;
-  city: string;
-  state: string;
-  zip: string;
-
-  // Billing Address (if different)
-  billingFirstName?: string;
-  billingLastName?: string;
-  billingAddress?: string;
-  billingCity?: string;
-  billingState?: string;
-  billingZip?: string;
-
-  // payment method
-  paymentMethod: string;
-}
+import { OrderData } from "@/domain/product/enities/orderdata";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -60,7 +35,7 @@ export default function CheckoutPage() {
   const tax = totalPrice * 0.08;
   const finalTotal = totalPrice + shippingCost + tax;
 
-  const sendOrderEmail = async (orderData: any) => {
+  const sendOrderEmail = async (orderData: OrderData) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/send-order-email`,
@@ -92,7 +67,7 @@ export default function CheckoutPage() {
       const formData = new FormData(e.currentTarget);
 
       // Extract form data
-      const orderData: FormData & { orderDetails: any } = {
+      const orderData: OrderData & { orderDetails: any } = {
         // Contact Information
         email: formData.get("email") as string,
         newsletter: formData.get("newsletter") === "on",
@@ -319,8 +294,7 @@ export default function CheckoutPage() {
                         : "border-border hover:border-primary/50"
                     }`}
                   >
-                    <RadioGroupItem value="cod" id="cod" className="mt-1" />{" "}
-                    {/* Adjust class if you want to hide: add 'sr-only' */}
+                    <RadioGroupItem value="cod" id="cod" className="mt-1" />
                     <div className="flex items-center space-x-3 flex-1">
                       <div className="h-10 w-10 bg-orange-100 rounded flex items-center justify-center flex-shrink-0">
                         <Package className="h-5 w-5 text-primary" />

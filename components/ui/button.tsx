@@ -35,25 +35,28 @@ const buttonVariants = cva(
   },
 )
 
-function Button({
-  className,
-  variant,
-  size,
-  asChild = false,
-  ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
-  const Comp = asChild ? Slot : 'button'
-
-  return (
-    <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
+// Define the props interface (optional but good practice with TS)
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
 }
+
+// --- CHANGE 1: Wrap in React.forwardRef ---
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => { // <-- CHANGE 2: Add 'ref' parameter
+    const Comp = asChild ? Slot : 'button'
+
+    return (
+      <Comp
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref} // <-- CHANGE 3: Pass 'ref' here
+        {...props}
+      />
+    )
+  },
+)
+Button.displayName = 'Button' // Also good practice
 
 export { Button, buttonVariants }

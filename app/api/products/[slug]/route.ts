@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import data from "@/lib/products.json"
-import { Product } from "@/domain/enities/product"
+import { Product } from "@/domain/product/enities/product"
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
   const { slug } = params

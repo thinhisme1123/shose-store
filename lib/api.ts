@@ -1,6 +1,6 @@
 // API utility functions for client-side requests
 
-import { Product } from "@/domain/enities/product"
+import { Product } from "@/domain/product/enities/product"
 
 export interface CartItem {
   id: string

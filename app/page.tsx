@@ -12,7 +12,7 @@ import productsData from "@/lib/products.json";
 export default function HomePage() {
   const featuredProducts = productsData.products.slice(0, 4);
   const newProducts = productsData.products.slice(2, 6);
-  const categories = productsData.categories;
+  const categories = productsData.categories.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background">

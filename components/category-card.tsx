@@ -3,6 +3,7 @@ import Link from "next/link"
 import type { Category } from "@/lib/types"
 
 interface CategoryCardProps {
+  key: string
   category: Category
 }
 

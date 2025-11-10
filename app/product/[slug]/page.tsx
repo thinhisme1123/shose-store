@@ -1,49 +1,117 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { ProductGrid } from "@/components/product-grid"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Heart, Minus, Plus, ShoppingBag, Star, Truck, Shield, RotateCcw } from "lucide-react"
-import productsData from "@/lib/products.json"
-import { formatPrice, calculateDiscount } from "@/lib/utils"
-import { notFound } from "next/navigation"
-import { useCart } from "@/contexts/cart-context"
-import { toast } from "sonner"
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { ProductGrid } from "@/components/product-grid";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Heart,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Star,
+  Truck,
+  Shield,
+  RotateCcw,
+} from "lucide-react";
+import productsData from "@/lib/products.json";
+import { formatPrice, calculateDiscount } from "@/lib/utils";
+import { notFound } from "next/navigation";
+import { useCart } from "@/contexts/cart-context";
+import { toast } from "sonner";
+import { Product } from "@/domain/product/enities/product";
+import { ProductApi } from "@/infrastructure/product/product-api";
+import { ProductService } from "@/application/product/service/product-service";
+import { getProductBySlugUseCase } from "@/application/product/usecases/get-product-by-slug";
+import { getProductsByCollectionUseCase } from "@/application/product/usecases/get-products-by-collection";
+import { useWishlist } from "@/contexts/wishlist-context";
 
 interface ProductPageProps {
   params: {
-    slug: string
-  }
+    slug: string;
+  };
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
-  const product = productsData.products.find((p) => p.slug === params.slug)
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
-  if (!product) {
-    notFound()
-  }
+  const { addItem, openCart } = useCart();
 
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
-  const [selectedSize, setSelectedSize] = useState("")
-  const [quantity, setQuantity] = useState(1)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const { addItem, openCart } = useCart()
+  const {
+    addItem: addToWishlist,
+    removeItem: removeFromWishlist,
+    isInWishlist,
+  } = useWishlist();
 
-  const discount = calculateDiscount(product.price, product.compareAtPrice)
-  const relatedProducts = productsData.products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4)
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const repo = new ProductApi();
+        const service = new ProductService(repo);
+
+        const data = await getProductBySlugUseCase(service, params.slug);
+
+        console.log(data);
+
+        if (!data) {
+          notFound();
+        }
+
+        setProduct(data);
+        setSelectedColor(data.colors?.[0] || "");
+        // Fetch related products from same category
+        const allProducts = await getProductsByCollectionUseCase(
+          service,
+          data.category
+        );
+        const related = allProducts
+          .filter((p) => p.category === data.category && p.id !== data.id)
+          .slice(0, 4);
+        setRelatedProducts(related);
+      } catch (error) {
+        console.error("Failed to fetch product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [params.slug]);
+
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (!product) return null;
+  
+  const inWishlist = isInWishlist(product.id);
+
+  const discount =
+    product.compareAtPrice && product.price
+      ? Math.round(
+          ((product.compareAtPrice - product.price) / product.compareAtPrice) *
+            100
+        )
+      : 0;
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast.error("Please select a size before adding to cart")
-      return
+      toast.error("Please select a size before adding to cart");
+      return;
     }
 
     addItem({
@@ -54,11 +122,30 @@ export default function ProductPage({ params }: ProductPageProps) {
       color: selectedColor,
       size: selectedSize,
       quantity,
-      id: ""
-    })
+      id: "",
+    });
 
-    openCart()
-  }
+    openCart();
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist({
+        id: product.id,
+        productId: product.id,
+        title: product.title,
+        price: product.price,
+        compareAtPrice: product.compareAtPrice,
+        image: product.images[0],
+        slug: product.slug,
+        category: product.category,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,7 +165,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
               {discount > 0 && (
-                <Badge className="absolute top-4 left-4 bg-destructive text-destructive-foreground">-{discount}%</Badge>
+                <Badge className="absolute top-4 left-4 bg-red-600 text-white font-semibold">
+                  -{discount}%
+                </Badge>
               )}
             </div>
 
@@ -90,7 +179,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={`aspect-square w-20 relative overflow-hidden rounded-md border-2 transition-colors ${
-                      index === currentImageIndex ? "border-primary" : "border-border"
+                      index === currentImageIndex
+                        ? "border-primary"
+                        : "border-border"
                     }`}
                   >
                     <Image
@@ -112,7 +203,9 @@ export default function ProductPage({ params }: ProductPageProps) {
               <h1 className="heading-lg mb-2">{product.title}</h1>
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-bold">{formatPrice(product.price)}</span>
+                  <span className="text-2xl font-bold">
+                    {formatPrice(product.price)}
+                  </span>
                   {product.compareAtPrice && (
                     <span className="text-lg text-muted-foreground line-through">
                       {formatPrice(product.compareAtPrice)}
@@ -121,12 +214,19 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </div>
                 <div className="flex items-center space-x-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    <Star
+                      key={i}
+                      className="h-4 w-4 fill-primary text-primary"
+                    />
                   ))}
-                  <span className="text-sm text-muted-foreground ml-2">(4.8)</span>
+                  <span className="text-sm text-muted-foreground ml-2">
+                    (4.8)
+                  </span>
                 </div>
               </div>
-              <p className="body-md text-muted-foreground">{product.description}</p>
+              <p className="body-md text-muted-foreground">
+                {product.description}
+              </p>
             </div>
 
             {/* Color Selection */}
@@ -138,17 +238,19 @@ export default function ProductPage({ params }: ProductPageProps) {
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     className={`w-8 h-8 rounded-full border-2 transition-colors ${
-                      selectedColor === color ? "border-primary" : "border-border"
+                      selectedColor === color
+                        ? "border-primary"
+                        : "border-border"
                     } ${
                       color.toLowerCase() === "black"
                         ? "bg-black"
                         : color.toLowerCase() === "white"
-                          ? "bg-white"
-                          : color.toLowerCase() === "orange"
-                            ? "bg-orange-500"
-                            : color.toLowerCase() === "charcoal"
-                              ? "bg-gray-700"
-                              : "bg-gray-400"
+                        ? "bg-white"
+                        : color.toLowerCase() === "orange"
+                        ? "bg-orange-500"
+                        : color.toLowerCase() === "charcoal"
+                        ? "bg-gray-700"
+                        : "bg-gray-400"
                     }`}
                     title={color}
                   />
@@ -203,8 +305,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <ShoppingBag className="h-5 w-5 mr-2" />
                 Add to Cart
               </Button>
-              <Button variant="outline" size="lg" className="w-full bg-transparent">
-                <Heart className="h-5 w-5 mr-2" />
+              <Button
+                onClick={handleWishlistToggle}
+                variant="outline"
+                size="lg"
+                className="w-full bg-transparent cursor-pointer"
+              >
+                <Heart className={`h-4 w-4 ${inWishlist ? "fill-primary text-primary" : ""}`} />
                 Add to Wishlist
               </Button>
             </div>
@@ -213,7 +320,9 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="border-t pt-6 space-y-4">
               <div className="flex items-center space-x-3">
                 <Truck className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm">Free shipping on orders over $75</span>
+                <span className="text-sm">
+                  Free shipping on orders over $75
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <RotateCcw className="h-5 w-5 text-muted-foreground" />
@@ -239,9 +348,11 @@ export default function ProductPage({ params }: ProductPageProps) {
               <div className="prose max-w-none">
                 <p className="body-lg mb-4">{product.description}</p>
                 <p className="body-md text-muted-foreground">
-                  Engineered for peak performance, this premium athletic wear combines cutting-edge materials with
-                  innovative design. Features include moisture-wicking technology, four-way stretch fabric, and
-                  ergonomic construction for maximum comfort and mobility.
+                  Engineered for peak performance, this premium athletic wear
+                  combines cutting-edge materials with innovative design.
+                  Features include moisture-wicking technology, four-way stretch
+                  fabric, and ergonomic construction for maximum comfort and
+                  mobility.
                 </p>
               </div>
             </TabsContent>
@@ -274,13 +385,20 @@ export default function ProductPage({ params }: ProductPageProps) {
                   <div>
                     <div className="flex items-center space-x-1 mb-1">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-primary text-primary"
+                        />
                       ))}
                     </div>
-                    <p className="text-sm text-muted-foreground">Based on 127 reviews</p>
+                    <p className="text-sm text-muted-foreground">
+                      Based on 127 reviews
+                    </p>
                   </div>
                 </div>
-                <p className="text-muted-foreground">Reviews functionality coming soon...</p>
+                <p className="text-muted-foreground">
+                  Reviews functionality coming soon...
+                </p>
               </div>
             </TabsContent>
           </Tabs>
@@ -297,5 +415,5 @@ export default function ProductPage({ params }: ProductPageProps) {
 
       <Footer />
     </div>
-  )
+  );
 }

@@ -15,6 +15,7 @@ import {
 import { useCart } from "@/contexts/cart-context";
 import { MegaMenu } from "./mega-menu";
 import { useWishlist } from "@/contexts/wishlist-context";
+import { useRouter } from "next/navigation";
 
 const navigation = [
   { name: "Men", href: "/collections/men" },
@@ -27,10 +28,12 @@ const navigation = [
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalItems, toggleCart } = useCart();
-const { totalItems: wishlistItems } = useWishlist()
+  const { totalItems: wishlistItems } = useWishlist();
+  const router = useRouter();
 
   let hoverTimeout: NodeJS.Timeout;
 
@@ -54,6 +57,17 @@ const { totalItems: wishlistItems } = useWishlist()
   const handleMegaMenuLeave = () => {
     setActiveMenu(null);
     setIsMenuOpen(false);
+  };
+
+  const handleSearch = (
+    e: React.KeyboardEvent<HTMLInputElement> | React.FormEvent
+  ) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
   };
 
   return (
@@ -128,12 +142,18 @@ const { totalItems: wishlistItems } = useWishlist()
             {/* Search */}
             <div className="relative">
               {isSearchOpen ? (
-                <div className="flex items-center space-x-2">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex items-center space-x-2"
+                >
                   <Input
                     type="search"
                     placeholder="Search products..."
                     className="w-64 h-9"
                     autoFocus
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
                   />
                   <Button
                     variant="ghost"
@@ -142,7 +162,7 @@ const { totalItems: wishlistItems } = useWishlist()
                   >
                     <X className="h-4 w-4" />
                   </Button>
-                </div>
+                </form>
               ) : (
                 <Button
                   variant="ghost"

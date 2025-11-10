@@ -11,5 +11,5 @@ export interface Product {
   tags: string[]
   inventory: number
   category: string
-  gender: string
+  gender: "men" | "women" | "unisex"
 }

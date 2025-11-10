@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ProductGrid } from "@/components/product-grid";
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Filter, X } from "lucide-react";
+import { Filter, X, ArrowLeft } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -22,85 +23,48 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import Link from "next/link";
 import productsData from "@/lib/products.json";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
 import { ProductService } from "@/application/product/service/product-service";
-import { getProductsByCollectionUseCase } from "@/application/product/usecases/get-products-by-collection";
-import { filterProductsUseCase } from "@/domain/product/usecases/filter-products";
-import { SkeletonGrid } from "@/components/ui/skeleton-grid";
+import { searchProductsUseCase } from "@/application/product/usecases/search-products";
 
-interface CollectionPageProps {
-  params: {
-    collection: string;
-  };
-}
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const keyword = searchParams.get("q") || "";
 
-export default function CollectionPage({ params }: CollectionPageProps) {
   const [sortBy, setSortBy] = useState("featured");
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState([0, 300]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
 
-  const collectionSlug = params.collection.toLowerCase();
-
+  // Filter products by search keyword
   useEffect(() => {
+    console.log("🔍 Current keyword:", keyword);
+    if (!keyword) return;
+
     const fetchData = async () => {
       try {
+        setLoading(true);
         const repo = new ProductApi();
         const service = new ProductService(repo);
-        const data = await getProductsByCollectionUseCase(
-          service,
-          collectionSlug
-        );
+        const data = await searchProductsUseCase(service, keyword);
+        console.log("✅ API returned:", typeof data);
         setProducts(data);
       } catch (err) {
-        console.error(err);
+        console.error("❌ Fetch error:", err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
-  }, [collectionSlug]);
-
-  // Get collection info
-  const category = productsData.categories.find(
-    (cat) => cat.slug === collectionSlug
-  );
-
-  const collectionTitle =
-    category?.name ||
-    collectionSlug.charAt(0).toUpperCase() + collectionSlug.slice(1);
-
-  // Determine if it’s gender collection
-  const isGenderCollection =
-    collectionSlug === "men" || collectionSlug === "women";
-
-  // Filter products and Filter by category if it's a specific category
-  const filteredProducts = useMemo(() => {
-    return filterProductsUseCase(products, {
-      isGenderCollection,
-      collectionSlug,
-      category,
-      selectedColors,
-      selectedSizes,
-      priceRange,
-      sortBy,
-    });
-  }, [
-    products,
-    category,
-    selectedColors,
-    selectedSizes,
-    priceRange,
-    sortBy,
-    isGenderCollection,
-    collectionSlug,
-  ]);
+  }, [keyword]);
 
   // Get all available colors and sizes
   const allColors = Array.from(
@@ -231,24 +195,12 @@ export default function CollectionPage({ params }: CollectionPageProps) {
     </div>
   );
 
-  // hold until loading is done
-  if (loading) {
+  if (isLoading)
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="heading-lg mb-2">Loading Collection...</h1>
-            <p className="body-md text-muted-foreground">
-              Please wait while we load products
-            </p>
-          </div>
-          <SkeletonGrid />
-        </main>
-        <Footer />
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
       </div>
     );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -256,12 +208,29 @@ export default function CollectionPage({ params }: CollectionPageProps) {
 
       <main className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="heading-lg mb-2">{collectionTitle}</h1>
-          <p className="body-md text-muted-foreground">
-            {filteredProducts.length}{" "}
-            {filteredProducts.length === 1 ? "product" : "products"}
-          </p>
+        <div className="mb-8 flex items-center gap-4">
+          <Link href="/">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="heading-lg mb-2">Search Results</h1>
+            <p className="body-md text-muted-foreground">
+              {keyword && (
+                <>
+                  Results for{" "}
+                  <span className="font-semibold text-foreground">
+                    "{keyword}"
+                  </span>
+                </>
+              )}
+              <span className="ml-2">
+                {products.length}{" "}
+                {products.length === 1 ? "product" : "products"} found
+              </span>
+            </p>
+          </div>
         </div>
 
         <div className="flex gap-8">
@@ -308,12 +277,13 @@ export default function CollectionPage({ params }: CollectionPageProps) {
             </div>
 
             {/* Products Grid */}
-            {filteredProducts.length > 0 ? (
-              <ProductGrid products={filteredProducts} />
+            {products.length > 0 ? (
+              <ProductGrid products={products} />
             ) : (
               <div className="text-center py-12">
                 <p className="body-lg text-muted-foreground mb-4">
-                  No products found matching your filters.
+                  No products found for "{keyword}". Try different keywords or
+                  adjust your filters.
                 </p>
                 <Button onClick={clearFilters}>Clear Filters</Button>
               </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useReducer, useEffect } from "react"
+import { createContext, useContext, useReducer, useEffect, useState } from "react"
 import type { CartItem } from "@/lib/types"
 
 interface CartState {
@@ -125,6 +125,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     isOpen: false,
   })
 
+  const [hasLoaded, setHasLoaded] = useState(false)
+
   // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem("athleon-cart")
@@ -136,12 +138,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         console.error("Failed to load cart from localStorage:", error)
       }
     }
+    setHasLoaded(true)
   }, [])
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
+    if (!hasLoaded) return
     localStorage.setItem("athleon-cart", JSON.stringify(state.items))
-  }, [state.items])
+  }, [state.items, hasLoaded])
 
   const addItem = (item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     dispatch({ type: "ADD_ITEM", payload: item })
