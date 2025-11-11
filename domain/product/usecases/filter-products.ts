@@ -1,8 +1,8 @@
 import { Product } from "../enities/product";
 
 interface FilterOptions {
-  isGenderCollection: boolean;
-  collectionSlug: string;
+  isGenderCollection?: boolean;
+  collectionSlug?: string;
   category?: { id: string } | null;
   selectedColors: string[];
   selectedSizes: string[];
@@ -30,7 +30,7 @@ export const filterProductsUseCase = (
   if (isGenderCollection) {
     filtered = filtered.filter(
       (product) =>
-        product.gender?.toLowerCase() === collectionSlug.toLowerCase() ||
+        product.gender?.toLowerCase() === collectionSlug?.toLowerCase() ||
         product.gender?.toLowerCase() === "unisex"
     );
   } else if (category) {

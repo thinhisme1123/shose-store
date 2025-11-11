@@ -30,17 +30,18 @@ import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
 import { ProductService } from "@/application/product/service/product-service";
 import { searchProductsUseCase } from "@/application/product/usecases/search-products";
+import { filterProductsUseCase } from "@/domain/product/usecases/filter-products";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const keyword = searchParams.get("q") || "";
 
+  const [products, setProducts] = useState<Product[]>([]);
   const [sortBy, setSortBy] = useState("featured");
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState([0, 300]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setLoading] = useState(false);
 
   // Filter products by search keyword
@@ -66,6 +67,23 @@ export default function SearchPage() {
     fetchData();
   }, [keyword]);
 
+
+  // Filter products and Filter by category if it's a specific category
+    const filteredProducts = useMemo(() => {
+      return filterProductsUseCase(products, {
+        selectedColors,
+        selectedSizes,
+        priceRange,
+        sortBy,
+      });
+    }, [
+      products,
+      selectedColors,
+      selectedSizes,
+      priceRange,
+      sortBy,
+    ]);
+  
   // Get all available colors and sizes
   const allColors = Array.from(
     new Set(productsData.products.flatMap((p) => p.colors))
@@ -226,8 +244,8 @@ export default function SearchPage() {
                 </>
               )}
               <span className="ml-2">
-                {products.length}{" "}
-                {products.length === 1 ? "product" : "products"} found
+                {filteredProducts.length}{" "}
+                {filteredProducts.length === 1 ? "product" : "products"} found
               </span>
             </p>
           </div>
@@ -277,8 +295,8 @@ export default function SearchPage() {
             </div>
 
             {/* Products Grid */}
-            {products.length > 0 ? (
-              <ProductGrid products={products} />
+            {filteredProducts.length > 0 ? (
+              <ProductGrid products={filteredProducts} />
             ) : (
               <div className="text-center py-12">
                 <p className="body-lg text-muted-foreground mb-4">
