@@ -26,7 +26,7 @@ import productsData from "@/lib/products.json";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
-import { ProductService } from "@/application/product/service/product-service";
+import { ProductService } from "@/application/product/service/product.service";
 import { getProductsByCollectionUseCase } from "@/application/product/usecases/get-products-by-collection";
 import { filterProductsUseCase } from "@/domain/product/usecases/filter-products";
 import { SkeletonGrid } from "@/components/ui/skeleton-grid";

@@ -24,12 +24,14 @@ import { StringToBoolean } from "class-variance-authority/types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CreditCard, Package } from "lucide-react";
 import { OrderData } from "@/domain/product/enities/orderdata";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("bank-transfer");
+  const router = useRouter();
 
   const shippingCost = totalPrice >= 75 ? 0 : 9.99;
   const tax = totalPrice * 0.08;
@@ -38,7 +40,7 @@ export default function CheckoutPage() {
   const sendOrderEmail = async (orderData: OrderData) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/send-order-email`,
+        `${process.env.NEXT_PUBLIC_API_URL}/email/send-order-email`,
         {
           method: "POST",
           headers: {
@@ -70,6 +72,7 @@ export default function CheckoutPage() {
       const orderData: OrderData & { orderDetails: any } = {
         // Contact Information
         email: formData.get("email") as string,
+        phoneNumber: formData.get("phoneNumber") as string,
         newsletter: formData.get("newsletter") === "on",
 
         // Shipping Address
@@ -121,7 +124,7 @@ export default function CheckoutPage() {
       );
 
       // Redirect to success page or reset form
-      // router.push('/order-success')
+      router.push("/order-success");
     } catch (error) {
       console.error("Order submission error:", error);
       toast.error(`${error}`);
@@ -156,6 +159,18 @@ export default function CheckoutPage() {
                     <Label htmlFor="newsletter" className="text-sm">
                       Email me with news and offers
                     </Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      type="tel"
+                      inputMode="tel"
+                      placeholder="090 123 4567"
+                      pattern="[0-9]{9,12}"
+                      required
+                    />
                   </div>
                 </div>
               </div>

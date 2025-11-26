@@ -16,6 +16,7 @@ import { useCart } from "@/contexts/cart-context";
 import { MegaMenu } from "./mega-menu";
 import { useWishlist } from "@/contexts/wishlist-context";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 const navigation = [
   { name: "Men", href: "/collections/men" },
@@ -34,6 +35,7 @@ export function Header() {
   const { totalItems, toggleCart } = useCart();
   const { totalItems: wishlistItems } = useWishlist();
   const router = useRouter();
+  const { isAuthenticated } = useAuth()
 
   let hoverTimeout: NodeJS.Timeout;
 
@@ -58,6 +60,15 @@ export function Header() {
     setActiveMenu(null);
     setIsMenuOpen(false);
   };
+
+  const handleAccountClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isAuthenticated) {
+      router.push("/account")
+    } else {
+      router.push("/login")
+    }
+  }
 
   const handleSearch = (
     e: React.KeyboardEvent<HTMLInputElement> | React.FormEvent
@@ -177,7 +188,7 @@ export function Header() {
             </div>
 
             {/* Account */}
-            <Button variant="ghost" size="icon" asChild>
+            <Button variant="ghost" size="icon" asChild onClick={handleAccountClick}>
               <Link href="/account">
                 <User className="h-5 w-5" />
                 <span className="sr-only">Account</span>

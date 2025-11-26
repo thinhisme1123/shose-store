@@ -1,6 +1,7 @@
 export interface OrderData {
   // Contact Information
   email: string;
+  phoneNumber: string;
   newsletter: boolean;
 
   // Shipping Address

@@ -1,4 +1,4 @@
-import { ProductService } from "../service/product-service"
+import { ProductService } from "../service/product.service"
 
 export const getProductsByCollectionUseCase = async (
   service: ProductService,

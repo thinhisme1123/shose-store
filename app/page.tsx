@@ -108,29 +108,28 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="heading-lg mb-6">
-                  [Your Brand Story Title Here]
-                </h2>
+                <h2 className="heading-lg mb-6">Built for Champions</h2>
                 <p className="body-lg mb-6 text-muted-foreground">
-                  This section is reserved for your brand introduction. You can
-                  share a short, impactful message about what your store stands
-                  for, your values, or what makes your products unique.
+                  At Athleon, we believe that every athlete deserves gear that
+                  matches their dedication. Our premium athletic wear is
+                  engineered with cutting-edge materials and innovative design
+                  to help you perform at your peak.
                 </p>
                 <p className="body-md mb-8 text-muted-foreground">
-                  Use this space to highlight your mission and connect
-                  emotionally with your customers. For example, you might talk
-                  about your inspiration, the quality of your products, or how
-                  you aim to serve your community.
+                  From moisture-wicking fabrics to ergonomic fits, every detail
+                  is crafted to enhance your performance and comfort, whether
+                  you're training for your next PR or conquering everyday
+                  challenges.
                 </p>
                 <Button asChild>
-                  <Link href="/about">Read More</Link>
+                  <Link href="/about">Our Story</Link>
                 </Button>
               </div>
 
               <div className="relative aspect-square rounded-lg overflow-hidden">
                 <Image
                   src="/athletic-training-gym-equipment.jpg"
-                  alt="Placeholder image"
+                  alt="Athletic training"
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"

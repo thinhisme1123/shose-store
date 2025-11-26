@@ -28,7 +28,7 @@ import productsData from "@/lib/products.json";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
-import { ProductService } from "@/application/product/service/product-service";
+import { ProductService } from "@/application/product/service/product.service";
 import { searchProductsUseCase } from "@/application/product/usecases/search-products";
 import { filterProductsUseCase } from "@/domain/product/usecases/filter-products";
 

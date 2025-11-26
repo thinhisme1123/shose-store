@@ -1,19 +1,31 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AccountApi } from "@/infrastructure/product/account-api";
+import { AccountService } from "@/application/product/service/account.service";
+import { RegisterUseCase } from "@/application/product/usecases/register";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -22,47 +34,78 @@ export default function RegisterPage() {
     confirmPassword: "",
     agreeToTerms: false,
     subscribeNewsletter: false,
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isLoading, setIsLoading] = useState(false)
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setErrors({})
+    e.preventDefault();
+    setIsLoading(true);
+    setErrors({});
 
-    // Validation
-    const newErrors: Record<string, string> = {}
-    if (!formData.firstName) newErrors.firstName = "First name is required"
-    if (!formData.lastName) newErrors.lastName = "Last name is required"
-    if (!formData.email) newErrors.email = "Email is required"
-    if (!formData.password) newErrors.password = "Password is required"
-    if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters"
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
-    }
-    if (!formData.agreeToTerms) newErrors.agreeToTerms = "You must agree to the terms"
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.firstName) newErrors.firstName = "First name is required";
+    if (!formData.lastName) newErrors.lastName = "Last name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.password) newErrors.password = "Password is required";
+    if (formData.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+    if (!formData.agreeToTerms)
+      newErrors.agreeToTerms = "You must agree to the terms";
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      setIsLoading(false)
-      return
+      setErrors(newErrors);
+      setIsLoading(false);
+      return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Registration attempt:", formData)
-      setIsLoading(false)
-      // Handle successful registration here
-    }, 1000)
-  }
+    try {
+      const repo = new AccountApi();
+      const service = new AccountService(repo);
+      const registerUseCase = new RegisterUseCase(service);
+
+      const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      };
+
+      const result = await registerUseCase.execute(payload);
+
+      console.log("REGISTER SUCCESS:", result);
+      toast.success("Account Created Successfully!")
+
+      router.push("/login?registered=true");
+    } catch (err: any) {
+      setErrors({ email: err.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="absolute top-4 left-4">
+        <Button
+          variant="ghost"
+          onClick={() => router.back()}
+          className="gap-2 cursor-pointer"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
+
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>Join Athleon and start your athletic journey</CardDescription>
+          <CardDescription>
+            Join Athleon and start your athletic journey
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,10 +116,17 @@ export default function RegisterPage() {
                   id="firstName"
                   placeholder="First name"
                   value={formData.firstName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, firstName: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      firstName: e.target.value,
+                    }))
+                  }
                   className={errors.firstName ? "border-red-500" : ""}
                 />
-                {errors.firstName && <p className="text-xs text-red-500">{errors.firstName}</p>}
+                {errors.firstName && (
+                  <p className="text-xs text-red-500">{errors.firstName}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
@@ -84,10 +134,17 @@ export default function RegisterPage() {
                   id="lastName"
                   placeholder="Last name"
                   value={formData.lastName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, lastName: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      lastName: e.target.value,
+                    }))
+                  }
                   className={errors.lastName ? "border-red-500" : ""}
                 />
-                {errors.lastName && <p className="text-xs text-red-500">{errors.lastName}</p>}
+                {errors.lastName && (
+                  <p className="text-xs text-red-500">{errors.lastName}</p>
+                )}
               </div>
             </div>
 
@@ -98,10 +155,14 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="Enter your email"
                 value={formData.email}
-                onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, email: e.target.value }))
+                }
                 className={errors.email ? "border-red-500" : ""}
               />
-              {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -112,7 +173,12 @@ export default function RegisterPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   value={formData.password}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, password: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
                   className={errors.password ? "border-red-500 pr-10" : "pr-10"}
                 />
                 <button
@@ -123,7 +189,9 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -134,18 +202,31 @@ export default function RegisterPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
-                  className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      confirmPassword: e.target.value,
+                    }))
+                  }
+                  className={
+                    errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"
+                  }
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={16} />
+                  ) : (
+                    <Eye size={16} />
+                  )}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -153,7 +234,12 @@ export default function RegisterPage() {
                 <Checkbox
                   id="agreeToTerms"
                   checked={formData.agreeToTerms}
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, agreeToTerms: checked as boolean }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      agreeToTerms: checked as boolean,
+                    }))
+                  }
                 />
                 <Label htmlFor="agreeToTerms" className="text-sm">
                   I agree to the{" "}
@@ -161,19 +247,27 @@ export default function RegisterPage() {
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-primary hover:underline">
+                  <Link
+                    href="/privacy"
+                    className="text-primary hover:underline"
+                  >
                     Privacy Policy
                   </Link>
                 </Label>
               </div>
-              {errors.agreeToTerms && <p className="text-sm text-red-500">{errors.agreeToTerms}</p>}
+              {errors.agreeToTerms && (
+                <p className="text-sm text-red-500">{errors.agreeToTerms}</p>
+              )}
 
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="subscribeNewsletter"
                   checked={formData.subscribeNewsletter}
                   onCheckedChange={(checked) =>
-                    setFormData((prev) => ({ ...prev, subscribeNewsletter: checked as boolean }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      subscribeNewsletter: checked as boolean,
+                    }))
                   }
                 />
                 <Label htmlFor="subscribeNewsletter" className="text-sm">
@@ -190,7 +284,10 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline font-medium">
+              <Link
+                href="/login"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign in
               </Link>
             </p>
@@ -198,5 +295,5 @@ export default function RegisterPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

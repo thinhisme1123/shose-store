@@ -24,15 +24,16 @@ import {
   Truck,
   Shield,
   RotateCcw,
+  ArrowLeft,
 } from "lucide-react";
 import productsData from "@/lib/products.json";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { useCart } from "@/contexts/cart-context";
 import { toast } from "sonner";
 import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
-import { ProductService } from "@/application/product/service/product-service";
+import { ProductService } from "@/application/product/service/product.service";
 import { getProductBySlugUseCase } from "@/application/product/usecases/get-product-by-slug";
 import { getProductsByCollectionUseCase } from "@/application/product/usecases/get-products-by-collection";
 import { useWishlist } from "@/contexts/wishlist-context";
@@ -44,6 +45,7 @@ interface ProductPageProps {
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -97,7 +99,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (!product) return null;
-  
+
   const inWishlist = isInWishlist(product.id);
 
   const discount =
@@ -150,6 +152,14 @@ export default function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        className="mb-6 gap-2 cursor-pointer"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Button>
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
@@ -311,7 +321,11 @@ export default function ProductPage({ params }: ProductPageProps) {
                 size="lg"
                 className="w-full bg-transparent cursor-pointer"
               >
-                <Heart className={`h-4 w-4 ${inWishlist ? "fill-primary text-primary" : ""}`} />
+                <Heart
+                  className={`h-4 w-4 ${
+                    inWishlist ? "fill-primary text-primary" : ""
+                  }`}
+                />
                 Add to Wishlist
               </Button>
             </div>
