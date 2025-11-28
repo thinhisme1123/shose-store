@@ -35,7 +35,7 @@ export function Header() {
   const { totalItems, toggleCart } = useCart();
   const { totalItems: wishlistItems } = useWishlist();
   const router = useRouter();
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
 
   let hoverTimeout: NodeJS.Timeout;
 
@@ -62,13 +62,13 @@ export function Header() {
   };
 
   const handleAccountClick = (e: React.MouseEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (isAuthenticated) {
-      router.push("/account")
+      router.push("/account");
     } else {
-      router.push("/login")
+      router.push("/login");
     }
-  }
+  };
 
   const handleSearch = (
     e: React.KeyboardEvent<HTMLInputElement> | React.FormEvent
@@ -188,10 +188,14 @@ export function Header() {
             </div>
 
             {/* Account */}
-            <Button variant="ghost" size="icon" asChild onClick={handleAccountClick}>
-              <Link href="/account">
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              onClick={handleAccountClick}
+            >
+              <Link href={!isAuthenticated ? "/account" : "/login"}>
                 <User className="h-5 w-5" />
-                <span className="sr-only">Account</span>
               </Link>
             </Button>
 

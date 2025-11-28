@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +12,16 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { User, Package, Heart, Settings, LogOut, ArrowLeft } from "lucide-react";
+import {
+  User,
+  Package,
+  Heart,
+  Settings,
+  LogOut,
+  ArrowLeft,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 // Mock data
 const mockUser = {
@@ -68,11 +76,18 @@ const mockWishlist = [
 
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("overview");
-  const router = useRouter()
+  const router = useRouter();
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
 
   const handleGoBack = () => {
-    router.back()
-  }
+    router.back();
+  };
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isLoading, isAuthenticated]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -139,10 +154,10 @@ export default function AccountPage() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <p>
-                    <strong>Name:</strong> {mockUser.name}
+                    <strong>Name:</strong> {user?.fullName}
                   </p>
                   <p>
-                    <strong>Email:</strong> {mockUser.email}
+                    <strong>Email:</strong> {user?.email}
                   </p>
                   <p>
                     <strong>Member since:</strong> {mockUser.joinDate}
@@ -413,17 +428,18 @@ export default function AccountPage() {
                 <CardTitle className="text-red-600">Danger Zone</CardTitle>
                 <CardDescription>Irreversible account actions</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex gap-2">
                 <Button
                   variant="outline"
-                  className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
+                  className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent cursor-pointer"
+                  onClick={() => logout()}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </Button>
                 <Button
                   variant="outline"
-                  className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
+                  className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent cursor-pointer"
                 >
                   Delete Account
                 </Button>

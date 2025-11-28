@@ -19,11 +19,12 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AccountApi } from "@/infrastructure/product/account-api";
 import { AccountService } from "@/application/product/service/account.service";
-import { RegisterUseCase } from "@/application/product/usecases/register";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const {register} = useAuth()
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -63,10 +64,6 @@ export default function RegisterPage() {
     }
 
     try {
-      const repo = new AccountApi();
-      const service = new AccountService(repo);
-      const registerUseCase = new RegisterUseCase(service);
-
       const payload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -74,7 +71,7 @@ export default function RegisterPage() {
         password: formData.password,
       };
 
-      const result = await registerUseCase.execute(payload);
+      const result = await register(payload);
 
       console.log("REGISTER SUCCESS:", result);
       toast.success("Account Created Successfully!")

@@ -1,14 +1,17 @@
-import { AccountApi } from "@/infrastructure/product/account-api"
+import { AccountApi } from "@/infrastructure/product/account-api";
 
 export class AccountService {
   constructor(private api: AccountApi) {}
-
   async register(data: {
-    firstName: string
-    lastName: string
-    email: string
-    password: string
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
   }) {
-    return this.api.register(data)
+    return this.api.register(data);
+  }
+
+  async login(email: string, password: string) {
+    return this.api.login(email, password);
   }
 }
