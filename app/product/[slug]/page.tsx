@@ -33,9 +33,7 @@ import { useCart } from "@/contexts/cart-context";
 import { toast } from "sonner";
 import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
-import { ProductService } from "@/application/product/service/product.service";
-import { getProductBySlugUseCase } from "@/application/product/usecases/get-product-by-slug";
-import { getProductsByCollectionUseCase } from "@/application/product/usecases/get-products-by-collection";
+import { ProductService } from "@/application/product/usercase/product.usecase";
 import { useWishlist } from "@/contexts/wishlist-context";
 
 interface ProductPageProps {
@@ -68,7 +66,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         const repo = new ProductApi();
         const service = new ProductService(repo);
 
-        const data = await getProductBySlugUseCase(service, params.slug);
+        const data = await service.getProductBySlug(params.slug)
 
         console.log(data);
 
@@ -78,13 +76,10 @@ export default function ProductPage({ params }: ProductPageProps) {
 
         setProduct(data);
         setSelectedColor(data.colors?.[0] || "");
-        // Fetch related products from same category
-        const allProducts = await getProductsByCollectionUseCase(
-          service,
-          data.category
-        );
+
+        const allProducts = await service.getProductsByCollection(data.category)
         const related = allProducts
-          .filter((p) => p.category === data.category && p.id !== data.id)
+          .filter((p) => p.category === data.category && p._id !== data._id)
           .slice(0, 4);
         setRelatedProducts(related);
       } catch (error) {
@@ -100,7 +95,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (!product) return null;
 
-  const inWishlist = isInWishlist(product.id);
+  const inWishlist = isInWishlist(product._id);
 
   const discount =
     product.compareAtPrice && product.price
@@ -117,7 +112,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
 
     addItem({
-      productId: product.id,
+      productId: product._id,
       title: product.title,
       price: product.price,
       image: product.images[0],
@@ -134,11 +129,12 @@ export default function ProductPage({ params }: ProductPageProps) {
     e.preventDefault();
 
     if (inWishlist) {
-      removeFromWishlist(product.id);
+      removeFromWishlist(product._id);
     } else {
+      // else if to handle logged or not
       addToWishlist({
-        id: product.id,
-        productId: product.id,
+        _id: product._id,
+        productId: product._id,
         title: product.title,
         price: product.price,
         compareAtPrice: product.compareAtPrice,
@@ -152,16 +148,17 @@ export default function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <Button
-        variant="ghost"
-        onClick={() => router.back()}
-        className="mb-6 gap-2 cursor-pointer"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>
-
       <main className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="mb-6 gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+        </div>
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
           {/* Product Images */}
           <div className="space-y-4">

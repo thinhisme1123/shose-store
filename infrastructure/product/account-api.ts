@@ -1,15 +1,13 @@
 import { User } from "@/domain/product/enities/user";
 import { AccountRepository } from "@/domain/product/repositories/account-repository";
 
-export class AccountApi implements AccountRepository{
+export class AccountApi implements AccountRepository {
   async register(data: {
     firstName: string;
     lastName: string;
     email: string;
     password: string;
-  }) : Promise<User> {
-    
-    
+  }): Promise<User> {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
       {
@@ -18,7 +16,7 @@ export class AccountApi implements AccountRepository{
         body: JSON.stringify(data),
       }
     );
-    
+
     if (!res.ok) {
       const error = await res.json();
       throw new Error(error.message || "Registration failed");
@@ -41,5 +39,33 @@ export class AccountApi implements AccountRepository{
     return data;
   }
 
+  async addToWishlist(productId: string) {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wishlist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ productId }),
+    });
+    return res.json();
+  }
 
+  async getWishlist() {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wishlist`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  }
+
+  async removeWishlist(productId: string) {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wishlist/${productId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  }
 }

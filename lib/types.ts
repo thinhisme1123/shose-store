@@ -39,7 +39,7 @@ export interface User {
 }
 
 export interface WishlistItem {
-  id: string
+  _id: string
   productId: string
   title: string
   price: number

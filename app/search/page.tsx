@@ -28,8 +28,7 @@ import productsData from "@/lib/products.json";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
-import { ProductService } from "@/application/product/service/product.service";
-import { searchProductsUseCase } from "@/application/product/usecases/search-products";
+import { ProductService } from "@/application/product/usercase/product.usecase";
 import { filterProductsUseCase } from "@/domain/product/usecases/filter-products";
 
 export default function SearchPage() {
@@ -54,7 +53,9 @@ export default function SearchPage() {
         setLoading(true);
         const repo = new ProductApi();
         const service = new ProductService(repo);
-        const data = await searchProductsUseCase(service, keyword);
+
+        const data = await service.searchProducts(keyword);
+
         console.log("✅ API returned:", typeof data);
         setProducts(data);
       } catch (err) {

@@ -18,7 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AccountApi } from "@/infrastructure/product/account-api";
-import { AccountService } from "@/application/product/service/account.service";
+import { AccountService } from "@/application/product/usercase/account.usecase";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/auth-context";
 

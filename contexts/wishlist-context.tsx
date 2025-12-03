@@ -1,132 +1,183 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { createContext, useContext, useReducer, useEffect, useState } from "react"
-import type { WishlistItem } from "@/lib/types"
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
+import { useAuth } from "./auth-context";
+import type { WishlistItem } from "@/lib/types";
+import { AccountApi } from "@/infrastructure/product/account-api";
+import { AccountService } from "@/application/product/usercase/account.usecase";
+import { toast } from "react-toastify";
+
+// ------------------ STATE ------------------
 
 interface WishlistState {
-  items: WishlistItem[]
+  items: WishlistItem[];
 }
 
 type WishlistAction =
+  | { type: "SET_WISHLIST"; payload: WishlistItem[] }
   | { type: "ADD_ITEM"; payload: WishlistItem }
   | { type: "REMOVE_ITEM"; payload: string }
-  | { type: "CLEAR_WISHLIST" }
-  | { type: "LOAD_WISHLIST"; payload: WishlistItem[] }
+  | { type: "CLEAR" };
 
-interface WishlistContextType extends WishlistState {
-  addItem: (item: WishlistItem) => void
-  removeItem: (productId: string) => void
-  clearWishlist: () => void
-  isInWishlist: (productId: string) => boolean
-  totalItems: number
-}
-
-const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
-
-function wishlistReducer(state: WishlistState, action: WishlistAction): WishlistState {
+function wishlistReducer(
+  state: WishlistState,
+  action: WishlistAction
+): WishlistState {
   switch (action.type) {
-    case "ADD_ITEM": {
-      const existingItem = state.items.find((item) => item.productId === action.payload.productId)
+    case "SET_WISHLIST":
+      return { items: action.payload };
 
-      if (existingItem) {
-        return state
-      }
-
-      return {
-        ...state,
-        items: [...state.items, action.payload],
-      }
-    }
+    case "ADD_ITEM":
+      if (state.items.some((i) => i.productId === action.payload.productId))
+        return state;
+      return { items: [...state.items, action.payload] };
 
     case "REMOVE_ITEM":
       return {
-        ...state,
-        items: state.items.filter((item) => item.productId !== action.payload),
-      }
+        items: state.items.filter((i) => i.productId !== action.payload),
+      };
 
-    case "CLEAR_WISHLIST":
-      return {
-        ...state,
-        items: [],
-      }
-
-    case "LOAD_WISHLIST":
-      return {
-        ...state,
-        items: action.payload,
-      }
+    case "CLEAR":
+      return { items: [] };
 
     default:
-      return state
+      return state;
   }
 }
 
+// ------------------ CONTEXT ------------------
+
+interface WishlistContextType {
+  items: WishlistItem[];
+  addItem: (item: WishlistItem) => Promise<void>;
+  removeItem: (productId: string) => Promise<void>;
+  clearWishlist: () => void;
+  isInWishlist: (productId: string) => boolean;
+  totalItems: number;
+}
+
+const WishlistContext = createContext<WishlistContextType | undefined>(
+  undefined
+);
+
+// ------------------ PROVIDER ------------------
+
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(wishlistReducer, {
-    items: [],
-  })
+  const { isAuthenticated } = useAuth();
+  const [state, dispatch] = useReducer(wishlistReducer, { items: [] });
+  const [initialized, setInitialized] = useState(false);
+  const repoWishlist = new AccountApi();
+  const usecaseWishlist = new AccountService(repoWishlist);
 
-  const [hasLoaded, setHasLoaded] = useState(false)
 
-  // Load wishlist from localStorage on mount
+  // ------------------ LOAD WISHLIST ------------------
+
   useEffect(() => {
-    const savedWishlist = localStorage.getItem("athleon-wishlist")
-    if (savedWishlist) {
-      try {
-        const wishlistItems = JSON.parse(savedWishlist)
-        dispatch({ type: "LOAD_WISHLIST", payload: wishlistItems })
-      } catch (error) {
-        console.error("Failed to load wishlist from localStorage:", error)
+    const load = async () => {
+      if (isAuthenticated) {
+        // Logged-in → Load from DB
+        const res = await usecaseWishlist.getWishlist();
+        const formatted = res.wishlist.map((p: any) => ({
+          productId: p.id,
+          title: p.title,
+          price: p.price,
+          image: p.images?.[0],
+        }));
+        dispatch({ type: "SET_WISHLIST", payload: formatted });
+      } else {
+        // Guest → Load from localStorage
+        const local = localStorage.getItem("athleon-wishlist");
+        if (local) {
+          dispatch({ type: "SET_WISHLIST", payload: JSON.parse(local) });
+        }
       }
-    }
-    setHasLoaded(true)
-  }, [])
+      setInitialized(true);
+    };
 
-  // Save wishlist to localStorage whenever it changes
+    load();
+  }, [isAuthenticated]);
+
+  // ------------------ SAVE TO LOCALSTORAGE (GUEST ONLY) ------------------
+
   useEffect(() => {
-    if (!hasLoaded) return
-    localStorage.setItem("athleon-wishlist", JSON.stringify(state.items))
-  }, [state.items,hasLoaded])
+    if (!initialized || isAuthenticated) return;
 
-  const addItem = (item: WishlistItem) => {
-    dispatch({ type: "ADD_ITEM", payload: item })
-  }
+    localStorage.setItem("athleon-wishlist", JSON.stringify(state.items));
+  }, [state.items, initialized, isAuthenticated]);
 
-  const removeItem = (productId: string) => {
-    dispatch({ type: "REMOVE_ITEM", payload: productId })
-  }
+  // ------------------ ACTIONS ------------------
+
+  const addItem = async (item: WishlistItem) => {
+    if (isAuthenticated) {
+      // Save to DB
+      await usecaseWishlist.addToWishlist(item.productId);
+      toast.success("Item is added to wishlist!")
+      const res = await usecaseWishlist.getWishlist();
+      const formatted = res.wishlist.map((p: any) => ({
+        productId: p.id,
+        title: p.title,
+        price: p.price,
+        image: p.images?.[0],
+      }));
+      dispatch({ type: "SET_WISHLIST", payload: formatted });
+      
+    } else {
+      // Save locally
+      dispatch({ type: "ADD_ITEM", payload: item });
+    }
+  };
+
+  const removeItem = async (productId: string) => {
+    if (isAuthenticated) {
+      await usecaseWishlist.removeWishlist(productId);
+      const res = await usecaseWishlist.getWishlist();
+      const formatted = res.wishlist.map((p: any) => ({
+        productId: p.id,
+        title: p.title,
+        price: p.price,
+        image: p.images?.[0],
+      }));
+      dispatch({ type: "SET_WISHLIST", payload: formatted });
+    } else {
+      dispatch({ type: "REMOVE_ITEM", payload: productId });
+    }
+  };
 
   const clearWishlist = () => {
-    dispatch({ type: "CLEAR_WISHLIST" })
-  }
+    dispatch({ type: "CLEAR" });
+    if (!isAuthenticated) localStorage.removeItem("athleon-wishlist");
+  };
 
   const isInWishlist = (productId: string) => {
-    return state.items.some((item) => item.productId === productId)
-  }
-
-  const totalItems = state.items.length
+    return state.items.some((item) => item.productId === productId);
+  };
 
   return (
     <WishlistContext.Provider
       value={{
-        ...state,
+        items: state.items,
         addItem,
         removeItem,
         clearWishlist,
         isInWishlist,
-        totalItems,
+        totalItems: state.items.length,
       }}
     >
       {children}
     </WishlistContext.Provider>
-  )
+  );
 }
 
+// ------------------ HOOK ------------------
+
 export function useWishlist() {
-  const context = useContext(WishlistContext)
-  if (context === undefined) {
-    throw new Error("useWishlist must be used within a WishlistProvider")
-  }
-  return context
+  const ctx = useContext(WishlistContext);
+  if (!ctx) throw new Error("useWishlist must be used within WishlistProvider");
+  return ctx;
 }

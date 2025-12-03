@@ -2,16 +2,17 @@
 
 import type React from "react";
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { ShoppingBag, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice, calculateDiscount } from "@/lib/utils";
-import type { Product } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { useWishlist } from "@/contexts/wishlist-context";
+import { Product } from "@/domain/product/enities/product";
+import { calculateDiscount, formatPrice } from "@/lib/utils";
+import { Heart, ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -27,14 +28,15 @@ export function ProductCard({ product }: ProductCardProps) {
     removeItem: removeFromWishlist,
     isInWishlist,
   } = useWishlist();
+  const { isAuthenticated } = useAuth();
 
-  const inWishlist = isInWishlist(product.id)
+  const inWishlist = isInWishlist(product._id);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
 
     addItem({
-      productId: product.id,
+      productId: product._id,
       title: product.title,
       price: product.price,
       image: product.images[0],
@@ -47,15 +49,15 @@ export function ProductCard({ product }: ProductCardProps) {
     openCart();
   };
 
-  const handleWishlistToggle = (e: React.MouseEvent) => {
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
 
     if (inWishlist) {
-      removeFromWishlist(product.id);
+      removeFromWishlist(product._id);
     } else {
       addToWishlist({
-        id: product.id,
-        productId: product.id,
+        _id: product._id,
+        productId: product._id,
         title: product.title,
         price: product.price,
         compareAtPrice: product.compareAtPrice,
@@ -96,7 +98,11 @@ export function ProductCard({ product }: ProductCardProps) {
             className="absolute top-3 right-3 bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={handleWishlistToggle}
           >
-            <Heart className={`h-4 w-4 ${inWishlist ? "fill-primary text-primary" : ""}`} />
+            <Heart
+              className={`h-4 w-4 ${
+                inWishlist ? "fill-primary text-primary" : ""
+              }`}
+            />
           </Button>
 
           {/* Quick add button */}

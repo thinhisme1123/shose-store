@@ -1,6 +1,6 @@
 "use client";
 
-import { AccountService } from "@/application/product/service/account.service";
+import { AccountService } from "@/application/product/usercase/account.usecase";
 import { User } from "@/domain/product/enities/user";
 import { AccountApi } from "@/infrastructure/product/account-api";
 import {

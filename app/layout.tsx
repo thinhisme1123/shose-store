@@ -7,6 +7,7 @@ import { MiniCart } from "@/components/mini-cart";
 import { Toaster } from "sonner";
 import { WishlistProvider } from "@/contexts/wishlist-context";
 import { AuthProvider } from "@/contexts/auth-context";
+import { ToastContainer } from "react-toastify";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -53,6 +54,7 @@ export default function RootLayout({
             <CartProvider>
               {children}
               <Toaster richColors position="top-right" />
+              <ToastContainer />
               <MiniCart />
             </CartProvider>
           </WishlistProvider>

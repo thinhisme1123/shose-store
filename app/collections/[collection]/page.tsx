@@ -26,8 +26,7 @@ import productsData from "@/lib/products.json";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
-import { ProductService } from "@/application/product/service/product.service";
-import { getProductsByCollectionUseCase } from "@/application/product/usecases/get-products-by-collection";
+import { ProductService } from "@/application/product/usercase/product.usecase";
 import { filterProductsUseCase } from "@/domain/product/usecases/filter-products";
 import { SkeletonGrid } from "@/components/ui/skeleton-grid";
 
@@ -53,10 +52,8 @@ export default function CollectionPage({ params }: CollectionPageProps) {
       try {
         const repo = new ProductApi();
         const service = new ProductService(repo);
-        const data = await getProductsByCollectionUseCase(
-          service,
-          collectionSlug
-        );
+
+        const data = await service.getProductsByCollection(collectionSlug);
         setProducts(data);
       } catch (err) {
         console.error(err);

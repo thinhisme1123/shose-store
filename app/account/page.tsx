@@ -109,7 +109,7 @@ export default function AccountPage() {
           <Button
             variant="ghost"
             onClick={handleGoBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             Back
