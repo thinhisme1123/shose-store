@@ -40,7 +40,6 @@ export interface User {
 
 export interface WishlistItem {
   _id: string
-  productId: string
   title: string
   price: number
   compareAtPrice?: number | null

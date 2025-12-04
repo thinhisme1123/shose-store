@@ -19,9 +19,11 @@ import {
   Settings,
   LogOut,
   ArrowLeft,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { useWishlist } from "@/contexts/wishlist-context";
 
 // Mock data
 const mockUser = {
@@ -78,6 +80,7 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const router = useRouter();
   const { isAuthenticated, isLoading, logout, user } = useAuth();
+  const { items, removeItem, clearWishlist } = useWishlist();
 
   const handleGoBack = () => {
     router.back();
@@ -324,25 +327,30 @@ export default function AccountPage() {
                 <CardDescription>Items you've saved for later</CardDescription>
               </CardHeader>
               <CardContent>
-                {mockWishlist.length > 0 ? (
+                {items.length > 0 ? (
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {mockWishlist.map((item) => (
-                      <div key={item.id} className="border rounded-lg p-4">
+                    {items.map((item) => (
+                      <div key={item._id} className="border rounded-lg p-4">
                         <img
                           src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          className="w-full h-32 object-cover rounded-md mb-3"
+                          alt={item.title}
+                          className="w-full h-40 object-cover rounded-md mb-3"
                         />
-                        <h3 className="font-medium mb-2">{item.name}</h3>
+                        <h3 className="font-medium mb-2">{item.title}</h3>
                         <p className="text-lg font-semibold mb-3">
                           ${item.price}
                         </p>
                         <div className="flex gap-2">
-                          <Button size="sm" className="flex-1">
+                          <Button size="sm" className="flex-1 cursor-pointer">
                             Add to Cart
                           </Button>
-                          <Button variant="outline" size="sm">
-                            Remove
+                          <Button
+                            className="cursor-pointer"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => removeItem(item._id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>

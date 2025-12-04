@@ -59,7 +59,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     removeItem: removeFromWishlist,
     isInWishlist,
   } = useWishlist();
-
+  
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -67,8 +67,6 @@ export default function ProductPage({ params }: ProductPageProps) {
         const service = new ProductService(repo);
 
         const data = await service.getProductBySlug(params.slug)
-
-        console.log(data);
 
         if (!data) {
           notFound();
@@ -88,7 +86,8 @@ export default function ProductPage({ params }: ProductPageProps) {
         setLoading(false);
       }
     };
-
+    
+    
     fetchProduct();
   }, [params.slug]);
 
@@ -96,6 +95,8 @@ export default function ProductPage({ params }: ProductPageProps) {
   if (!product) return null;
 
   const inWishlist = isInWishlist(product._id);
+  
+  console.log(inWishlist);
 
   const discount =
     product.compareAtPrice && product.price
@@ -134,7 +135,6 @@ export default function ProductPage({ params }: ProductPageProps) {
       // else if to handle logged or not
       addToWishlist({
         _id: product._id,
-        productId: product._id,
         title: product.title,
         price: product.price,
         compareAtPrice: product.compareAtPrice,

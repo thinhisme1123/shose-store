@@ -34,13 +34,13 @@ function wishlistReducer(
       return { items: action.payload };
 
     case "ADD_ITEM":
-      if (state.items.some((i) => i.productId === action.payload.productId))
+      if (state.items.some((i) => i._id === action.payload._id))
         return state;
       return { items: [...state.items, action.payload] };
 
     case "REMOVE_ITEM":
       return {
-        items: state.items.filter((i) => i.productId !== action.payload),
+        items: state.items.filter((i) => i._id !== action.payload),
       };
 
     case "CLEAR":
@@ -75,7 +75,6 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const repoWishlist = new AccountApi();
   const usecaseWishlist = new AccountService(repoWishlist);
 
-
   // ------------------ LOAD WISHLIST ------------------
 
   useEffect(() => {
@@ -84,10 +83,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         // Logged-in → Load from DB
         const res = await usecaseWishlist.getWishlist();
         const formatted = res.wishlist.map((p: any) => ({
-          productId: p.id,
+          _id: p._id,
           title: p.title,
           price: p.price,
           image: p.images?.[0],
+          slug: p.slug,
         }));
         dispatch({ type: "SET_WISHLIST", payload: formatted });
       } else {
@@ -116,17 +116,17 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const addItem = async (item: WishlistItem) => {
     if (isAuthenticated) {
       // Save to DB
-      await usecaseWishlist.addToWishlist(item.productId);
-      toast.success("Item is added to wishlist!")
+      await usecaseWishlist.addToWishlist(item._id);
+      toast.success("Item is added to wishlist!");
       const res = await usecaseWishlist.getWishlist();
       const formatted = res.wishlist.map((p: any) => ({
-        productId: p.id,
+        _id: p._id,
         title: p.title,
         price: p.price,
         image: p.images?.[0],
+        slug: p.slug,
       }));
       dispatch({ type: "SET_WISHLIST", payload: formatted });
-      
     } else {
       // Save locally
       dispatch({ type: "ADD_ITEM", payload: item });
@@ -138,10 +138,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       await usecaseWishlist.removeWishlist(productId);
       const res = await usecaseWishlist.getWishlist();
       const formatted = res.wishlist.map((p: any) => ({
-        productId: p.id,
+        _id: p._id,
         title: p.title,
         price: p.price,
         image: p.images?.[0],
+        slug: p.slug,
       }));
       dispatch({ type: "SET_WISHLIST", payload: formatted });
     } else {
@@ -155,7 +156,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isInWishlist = (productId: string) => {
-    return state.items.some((item) => item.productId === productId);
+    return state.items.some((item) => item._id === productId);
   };
 
   return (

@@ -54,10 +54,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const loadedUser: User = {
         id: data.user.id,
-        fullName: `${data.user.firstName} ${data.user.lastName}`,
+        fullName: data.user.fullName,
         email: data.user.email,
       };
-
+      console.log(loadedUser);
+      
       setUser(loadedUser);
     } catch (err) {
       localStorage.removeItem("token");

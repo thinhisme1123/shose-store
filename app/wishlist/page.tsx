@@ -76,7 +76,7 @@ export default function WishlistPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {items.map((item) => (
-            <Card key={item.productId} className="overflow-hidden group">
+            <Card key={item._id} className="overflow-hidden group">
               <Link href={`/product/${item.slug}`}>
                 <div className="aspect-square relative overflow-hidden bg-muted">
                   <Image
@@ -107,10 +107,10 @@ export default function WishlistPage() {
 
                 <div className="flex gap-2">
                   <Button size="sm" className="flex-1" onClick={() => handleAddToCart(item)}>
-                    <ShoppingBag className="h-4 w-4 mr-2" />
+                    <ShoppingBag className="h-4 w-4 mr-2 cursor-pointer" />
                     Add to Cart
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => removeItem(item.productId)}>
+                  <Button className="cursor-pointer" size="sm" variant="outline" onClick={() => removeItem(item._id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

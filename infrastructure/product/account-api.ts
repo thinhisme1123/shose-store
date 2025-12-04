@@ -1,5 +1,6 @@
 import { User } from "@/domain/product/enities/user";
 import { AccountRepository } from "@/domain/product/repositories/account-repository";
+import { toast } from "react-toastify";
 
 export class AccountApi implements AccountRepository {
   async register(data: {
@@ -62,10 +63,13 @@ export class AccountApi implements AccountRepository {
 
   async removeWishlist(productId: string) {
     const token = localStorage.getItem("token");
+    console.log(productId);
+    
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/wishlist/${productId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
+    toast.success("Delete Item Successfully!")
     return res.json();
   }
 }
