@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import { WishlistProvider } from "@/contexts/wishlist-context";
 import { AuthProvider } from "@/contexts/auth-context";
 import { ToastContainer } from "react-toastify";
+import { ReviewProvider } from "@/contexts/review-context";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -52,10 +53,12 @@ export default function RootLayout({
         <AuthProvider>
           <WishlistProvider>
             <CartProvider>
-              {children}
-              <Toaster richColors position="top-right" />
-              <ToastContainer />
-              <MiniCart />
+              <ReviewProvider>
+                {children}
+                <Toaster richColors position="top-right" />
+                <ToastContainer />
+                <MiniCart />
+              </ReviewProvider>
             </CartProvider>
           </WishlistProvider>
         </AuthProvider>

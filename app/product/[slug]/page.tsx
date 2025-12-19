@@ -35,6 +35,9 @@ import { Product } from "@/domain/product/enities/product";
 import { ProductApi } from "@/infrastructure/product/product-api";
 import { ProductService } from "@/application/product/usercase/product.usecase";
 import { useWishlist } from "@/contexts/wishlist-context";
+import { RatingSummary } from "@/components/rating-summary";
+import { ReviewList } from "@/components/review-list";
+import { ReviewForm } from "@/components/review-form";
 
 interface ProductPageProps {
   params: {
@@ -51,6 +54,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+  const [reviewRefreshTrigger, setReviewRefreshTrigger] = useState(0);
 
   const { addItem, openCart } = useCart();
 
@@ -59,14 +63,14 @@ export default function ProductPage({ params }: ProductPageProps) {
     removeItem: removeFromWishlist,
     isInWishlist,
   } = useWishlist();
-  
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const repo = new ProductApi();
         const service = new ProductService(repo);
 
-        const data = await service.getProductBySlug(params.slug)
+        const data = await service.getProductBySlug(params.slug);
 
         if (!data) {
           notFound();
@@ -75,7 +79,9 @@ export default function ProductPage({ params }: ProductPageProps) {
         setProduct(data);
         setSelectedColor(data.colors?.[0] || "");
 
-        const allProducts = await service.getProductsByCollection(data.category)
+        const allProducts = await service.getProductsByCollection(
+          data.category
+        );
         const related = allProducts
           .filter((p) => p.category === data.category && p._id !== data._id)
           .slice(0, 4);
@@ -86,16 +92,21 @@ export default function ProductPage({ params }: ProductPageProps) {
         setLoading(false);
       }
     };
-    
-    
+
     fetchProduct();
   }, [params.slug]);
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+      </div>
+    );
+
   if (!product) return null;
 
   const inWishlist = isInWishlist(product._id);
-  
+
   console.log(inWishlist);
 
   const discount =
@@ -390,26 +401,29 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
             </TabsContent>
             <TabsContent value="reviews" className="mt-6">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <div className="text-3xl font-bold">4.8</div>
+              <div className="space-y-8">
+                <RatingSummary productId={product._id} />
+
+                <div className="grid lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2">
+                    <h3 className="font-semibold text-lg mb-4">
+                      Customer Reviews
+                    </h3>
+                    <ReviewList
+                      productId={product._id}
+                      refreshTrigger={reviewRefreshTrigger}
+                    />
+                  </div>
+
                   <div>
-                    <div className="flex items-center space-x-1 mb-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 fill-primary text-primary"
-                        />
-                      ))}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Based on 127 reviews
-                    </p>
+                    <ReviewForm
+                      productId={product._id}
+                      onSuccess={() =>
+                        setReviewRefreshTrigger(reviewRefreshTrigger + 1)
+                      }
+                    />
                   </div>
                 </div>
-                <p className="text-muted-foreground">
-                  Reviews functionality coming soon...
-                </p>
               </div>
             </TabsContent>
           </Tabs>
