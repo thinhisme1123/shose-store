@@ -42,7 +42,7 @@ export function ReviewProvider({ children }: { children: ReactNode }) {
   const getReviews = async (productId: string, options: { page?: number; limit?: number; sort?: string } = {}) => {
     try {
       const { page = 1, limit = 10, sort = "newest" } = options
-      const response = await fetch(`/api/reviews?productId=${productId}&page=${page}&limit=${limit}&sort=${sort}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/review/find-by-productid/${productId}`)
 
       const result = await response.json()
       return result

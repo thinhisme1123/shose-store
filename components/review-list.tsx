@@ -43,22 +43,24 @@ export function ReviewList({ productId, refreshTrigger }: ReviewListProps) {
 
   const loadReviews = async (pageNum: number, sort: string, append = false) => {
     setLoading(true);
-    // const result = await getReviews(productId, {
-    //   page: pageNum,
-    //   limit: 5,
-    //   sort,
-    // });
+    const result = await getReviews(productId, {
+      page: pageNum,
+      limit: 5,
+      sort,
+    });
+    console.log(result);
+    
 
-    const start = (pageNum - 1) * 5;
-    const end = start + 5;
+    // const start = (pageNum - 1) * 5;
+    // const end = start + 5;
 
-    const paginatedReviews = FAKE_REVIEWS.slice(start, end);
+    // const paginatedReviews = FAKE_REVIEWS.slice(start, end);
 
-    const result = {
-      reviews: paginatedReviews,
-      total: FAKE_REVIEWS.length,
-      hasMore: end < FAKE_REVIEWS.length,
-    };
+    // const result = {
+    //   reviews: paginatedReviews,
+    //   total: FAKE_REVIEWS.length,
+    //   hasMore: end < FAKE_REVIEWS.length,
+    // };
     setLoading(false);
 
     if (append) {

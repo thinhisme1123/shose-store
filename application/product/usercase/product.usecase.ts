@@ -1,4 +1,4 @@
-import { ProductRepository } from "@/domain/product/repositories/product-repository";
+import { ProductRepository } from "@/domain/product/repositories/product.repository";
 import { Product } from "@/domain/product/enities/product";
 
 export class ProductService {

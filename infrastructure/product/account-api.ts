@@ -1,5 +1,5 @@
 import { User } from "@/domain/product/enities/user";
-import { AccountRepository } from "@/domain/product/repositories/account-repository";
+import { AccountRepository } from "@/domain/product/repositories/account.repository";
 import { toast } from "react-toastify";
 
 export class AccountApi implements AccountRepository {

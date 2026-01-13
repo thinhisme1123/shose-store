@@ -14,8 +14,7 @@ interface ReviewCardProps {
     userName: string
     rating: number
     title: string
-    comment: string
-    body: string
+    content: string
     images?: string[]
     helpful: number
     createdAt: string
@@ -114,7 +113,7 @@ export function ReviewCard({ review, onDelete }: ReviewCardProps) {
           <h4 className="font-semibold leading-snug">{review.title}</h4>
         )}
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {review.body || review.comment}
+          {review.content}
         </p>
       </div>
 
