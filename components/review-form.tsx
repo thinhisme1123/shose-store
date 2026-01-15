@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { use, useState } from "react"
 import { Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useReview } from "@/contexts/review-context"
 import { useRouter } from "next/navigation"
+import { toast } from "react-toastify"
 
 interface ReviewFormProps {
   productId: string
@@ -24,7 +25,7 @@ export function ReviewForm({ productId, onSuccess }: ReviewFormProps) {
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [title, setTitle] = useState("")
-  const [body, setBody] = useState("")
+  const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
 
@@ -42,7 +43,7 @@ export function ReviewForm({ productId, onSuccess }: ReviewFormProps) {
       return
     }
 
-    if (!title.trim() || !body.trim()) {
+    if (!title.trim() || !content.trim()) {
       setError("Please fill in all fields")
       return
     }
@@ -53,18 +54,19 @@ export function ReviewForm({ productId, onSuccess }: ReviewFormProps) {
       productId,
       rating,
       title: title.trim(),
-      body: body.trim(),
+      content: content.trim(),
     })
 
     setIsSubmitting(false)
 
-    if (result.success) {
+    if (result) {
       setRating(0)
       setTitle("")
-      setBody("")
+      setContent("")
+      toast.success("You comment is created successfully!")
       if (onSuccess) onSuccess()
     } else {
-      setError(result.error || "Failed to submit review")
+      setError("Failed to submit review")
     }
   }
 
@@ -125,13 +127,13 @@ export function ReviewForm({ productId, onSuccess }: ReviewFormProps) {
           </label>
           <Textarea
             id="review-body"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             placeholder="Share your experience with this product..."
             rows={5}
             maxLength={1000}
           />
-          <p className="text-xs text-muted-foreground mt-1">{body.length}/1000 characters</p>
+          <p className="text-xs text-muted-foreground mt-1">{content.length}/1000 characters</p>
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}

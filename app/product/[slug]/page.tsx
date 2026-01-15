@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Header } from "@/components/header";
+import { ProductService } from "@/application/product/usercase/product.usecase";
 import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 import { ProductGrid } from "@/components/product-grid";
-import { Button } from "@/components/ui/button";
+import { RatingSummary } from "@/components/rating-summary";
+import { ReviewForm } from "@/components/review-form";
+import { ReviewList } from "@/components/review-list";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -15,29 +16,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCart } from "@/contexts/cart-context";
+import { useWishlist } from "@/contexts/wishlist-context";
+import { Product } from "@/domain/product/enities/product";
+import { ProductApi } from "@/infrastructure/product/product-api";
+import { formatPrice } from "@/lib/utils";
 import {
+  ArrowLeft,
   Heart,
   Minus,
   Plus,
+  RotateCcw,
+  Shield,
   ShoppingBag,
   Star,
   Truck,
-  Shield,
-  RotateCcw,
-  ArrowLeft,
 } from "lucide-react";
-import productsData from "@/lib/products.json";
-import { formatPrice, calculateDiscount } from "@/lib/utils";
+import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
-import { useCart } from "@/contexts/cart-context";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Product } from "@/domain/product/enities/product";
-import { ProductApi } from "@/infrastructure/product/product-api";
-import { ProductService } from "@/application/product/usercase/product.usecase";
-import { useWishlist } from "@/contexts/wishlist-context";
-import { RatingSummary } from "@/components/rating-summary";
-import { ReviewList } from "@/components/review-list";
-import { ReviewForm } from "@/components/review-form";
 
 interface ProductPageProps {
   params: {
@@ -106,8 +105,6 @@ export default function ProductPage({ params }: ProductPageProps) {
   if (!product) return null;
 
   const inWishlist = isInWishlist(product._id);
-
-  console.log(inWishlist);
 
   const discount =
     product.compareAtPrice && product.price

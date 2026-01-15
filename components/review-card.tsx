@@ -94,7 +94,7 @@ export function ReviewCard({ review, onDelete }: ReviewCardProps) {
           </div>
         </div>
 
-        {isOwner && (
+        {/* {isOwner && (
           <Button
             variant="ghost"
             size="icon"
@@ -104,7 +104,7 @@ export function ReviewCard({ review, onDelete }: ReviewCardProps) {
           >
             <Trash2 className="h-4 w-4" />
           </Button>
-        )}
+        )} */}
       </div>
 
       {/* Content */}
