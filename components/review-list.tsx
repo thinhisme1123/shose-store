@@ -48,9 +48,7 @@ export function ReviewList({ productId, refreshTrigger }: ReviewListProps) {
       limit: 5,
       sort,
     });
-    console.log(result);
-    
-
+  
     // const start = (pageNum - 1) * 5;
     // const end = start + 5;
 

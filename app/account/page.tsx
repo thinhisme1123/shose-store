@@ -24,6 +24,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useWishlist } from "@/contexts/wishlist-context";
+import { useCart } from "@/contexts/cart-context";
 
 // Mock data
 const mockUser = {
@@ -81,6 +82,22 @@ export default function AccountPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading, logout, user } = useAuth();
   const { items, removeItem, clearWishlist } = useWishlist();
+
+  const { addItem, openCart } = useCart()
+  
+    const handleAddToCart = (item: any) => {
+      addItem({
+          productId: item.productId,
+          title: item.title,
+          price: item.price,
+          image: item.image,
+          color: "Default",
+          size: "M",
+          quantity: 1,
+          id: ""
+      })
+      openCart()
+    }
 
   const handleGoBack = () => {
     router.back();
@@ -341,7 +358,7 @@ export default function AccountPage() {
                           ${item.price}
                         </p>
                         <div className="flex gap-2">
-                          <Button size="sm" className="flex-1 cursor-pointer">
+                          <Button size="sm" className="flex-1 cursor-pointer" onClick={() => handleAddToCart(item)}>
                             Add to Cart
                           </Button>
                           <Button

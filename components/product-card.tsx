@@ -57,7 +57,6 @@ export function ProductCard({ product }: ProductCardProps) {
     } else {
       addToWishlist({
         _id: product._id,
-        productId: product._id,
         title: product.title,
         price: product.price,
         compareAtPrice: product.compareAtPrice,

@@ -35,7 +35,7 @@ export function MiniCart() {
                 <div className="space-y-6">
                   {items.map((item) => (
                     <div key={item.id} className="flex space-x-4">
-                      <div className="relative h-16 w-16 overflow-hidden rounded-md bg-muted">
+                      <div className="relative ms-2 h-16 w-16 overflow-hidden rounded-md bg-muted">
                         <Image
                           src={item.image || "/placeholder.svg"}
                           alt={item.title}
@@ -89,7 +89,7 @@ export function MiniCart() {
                   <span>Total</span>
                   <span>{formatPrice(totalPrice)}</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 mb-2">
                   <Button className="w-full" onClick={closeCart} asChild>
                     <Link href="/cart">View Cart</Link>
                   </Button>

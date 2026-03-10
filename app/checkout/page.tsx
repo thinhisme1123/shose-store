@@ -47,7 +47,7 @@ export default function CheckoutPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(orderData),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -59,6 +59,26 @@ export default function CheckoutPage() {
       console.error("Error sending email:", error);
       throw error;
     }
+  };
+
+  const createOrder = async (orderData: OrderData) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/cart/orders`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      },
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Order failed");
+    }
+
+    return await response.json();
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,12 +135,15 @@ export default function CheckoutPage() {
       // Send email notification
       await sendOrderEmail(orderData);
 
+      // Modify the inventory number
+      await createOrder(orderData);
+
       // Clear the cart
       clearCart();
 
       // Show success message
       toast.success(
-        `Order ${orderData.orderDetails.orderId} completed successfully!`
+        `Order ${orderData.orderDetails.orderId} completed successfully!`,
       );
 
       // Redirect to success page or reset form
